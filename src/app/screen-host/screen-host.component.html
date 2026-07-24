@@ -1,0 +1,35 @@
+@if (screenSettings) {
+  @switch (screenSettings.viewType) {
+    @case (viewType.Grid) {
+      <div [@flyIn]="'in'"><app-generic-grid [settings]="screenSettings.settings" [commandButtons]="screenSettings.commandButtons"></app-generic-grid></div>
+    }
+    @case (viewType.Create) {
+      <div [@flyIn]="'in'"><app-generic-create [settings]="screenSettings.settings" [commandButtons]="screenSettings.commandButtons"></app-generic-create></div>
+    }
+    @case (viewType.Edit) {
+      <div [@flyIn]="'in'"><app-generic-edit [settings]="screenSettings.settings" [commandButtons]="screenSettings.commandButtons"></app-generic-edit></div>
+    }
+    @case (viewType.Detail) {
+      <div [@flyIn]="'in'"><app-generic-detail [settings]="screenSettings.settings" [commandButtons]="screenSettings.commandButtons"></app-generic-detail></div>
+    }
+    @case (viewType.Delete) {
+      <div [@flyIn]="'in'"><app-generic-delete [settings]="screenSettings.settings" [commandButtons]="screenSettings.commandButtons"></app-generic-delete></div>
+    }
+    @case (viewType.Html) {
+      <div [@flyIn]="'in'"><app-html-page [settings]="screenSettings.settings" [commandButtons]="screenSettings.commandButtons"></app-html-page></div>
+    }
+    @case (viewType.List) {
+      <div [@flyIn]="'in'"><app-generic-list [settings]="screenSettings.settings" [commandButtons]="screenSettings.commandButtons"></app-generic-list></div>
+    }
+    @case (viewType.FlowComplete) {
+      <div [@flyIn]="'in'">FlowComplete</div>
+    }
+    @case (viewType.Exception) {
+      <div [@flyIn]="'in'">
+        <div class="alert alert-danger">
+          <strong>{{screenSettings.settings.message}}</strong>
+        </div>
+      </div>
+    }
+  }
+}
