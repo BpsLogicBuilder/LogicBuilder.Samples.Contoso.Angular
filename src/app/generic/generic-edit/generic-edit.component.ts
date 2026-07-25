@@ -10,9 +10,9 @@ import { ICommandButton } from '../../stuctures/i-command-button';
 import { ObjectHelper } from '../../common/object-helper';
 import { debounceTime } from 'rxjs/operators';
 import { ViewTypeEnum } from '../../stuctures/screens/i-view-type';
-import { EditFormHelpers } from 'src/app/common/edit-form-helpers';
-import { EntityStateType } from 'src/app/stuctures/screens/entity-state-type';
-import { Directives } from 'src/app/common/directives';
+import { EditFormHelpers } from '../../common/edit-form-helpers';
+import { EntityStateType } from '../../stuctures/screens/entity-state-type';
+import { Directives } from '../../common/directives';
 
 @Component({
     selector: 'app-generic-edit',

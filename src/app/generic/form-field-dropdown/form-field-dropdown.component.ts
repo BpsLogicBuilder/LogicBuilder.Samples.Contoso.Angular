@@ -3,7 +3,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { IDropDownTemplate } from '../../stuctures/screens/edit/i-edit-form-settings';
 import { GenericService } from '../../http/generic.service';
 import { SettingsService } from '../../http/settings.service';
-import { ISelectorFlowResponse } from 'src/app/stuctures/i-selector-flow-response';
+import { ISelectorFlowResponse } from '../../stuctures/i-selector-flow-response';
 
 @Component({
     selector: 'app-form-field-dropdown',

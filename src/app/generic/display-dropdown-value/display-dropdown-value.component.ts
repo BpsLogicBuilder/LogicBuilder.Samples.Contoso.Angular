@@ -1,8 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { GenericService } from '../../http/generic.service';
-import { IDetailDropDownTemplate } from 'src/app/stuctures/screens/detail/i-detail-form-settings';
+import { IDetailDropDownTemplate } from '../../stuctures/screens/detail/i-detail-form-settings';
 import { SettingsService } from '../../http/settings.service';
-import { ISelectorFlowResponse } from 'src/app/stuctures/i-selector-flow-response';
+import { ISelectorFlowResponse } from '../../stuctures/i-selector-flow-response';
 
 @Component({
     selector: '[app-display-dropdown-value]',

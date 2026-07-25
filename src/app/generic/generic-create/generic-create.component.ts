@@ -9,9 +9,9 @@ import { EntityType } from '../../stuctures/screens/i-base-model';
 import { ObjectHelper } from '../../common/object-helper';
 import { debounceTime } from 'rxjs/operators';
 import { ViewTypeEnum } from '../../stuctures/screens/i-view-type';
-import { EditFormHelpers } from 'src/app/common/edit-form-helpers';
-import { Directives } from 'src/app/common/directives';
-import { DateService } from 'src/app/common/date.service';
+import { EditFormHelpers } from '../../common/edit-form-helpers';
+import { Directives } from '../../common/directives';
+import { DateService } from '../../common/date.service';
 
 @Component({
     selector: 'app-generic-create',
