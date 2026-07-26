@@ -11,15 +11,15 @@ import { ViewTypeEnum } from '../stuctures/screens/i-view-type';
     standalone: false
 })
 export class HtmlPageComponent implements OnInit {
-  @ViewChild('welcomeTemplate', { static: true }) welcomeTemplate: TemplateRef<any>;
-  @ViewChild('messageTemplate', { static: true }) messageTemplate: TemplateRef<any>;
+  @ViewChild('welcomeTemplate', { static: true }) welcomeTemplate!: TemplateRef<any>;
+  @ViewChild('messageTemplate', { static: true }) messageTemplate!: TemplateRef<any>;
 
-  @Input() public settings: IHtmlPageSettings;
-  @Input() public commandButtons: ICommandButton[];
+  @Input() public settings!: IHtmlPageSettings;
+  @Input() public commandButtons!: ICommandButton[];
 
   constructor(private _uiNotificationService: UiNotificationService) { }
 
-  public getTemplate(templateName: string) {
+  public getTemplate(templateName: 'welcomeTemplate' | 'messageTemplate') {
     return this[templateName];
   }
 
@@ -41,7 +41,7 @@ export class HtmlPageComponent implements OnInit {
   navigateNext(button: ICommandButton) {
     this._uiNotificationService.navigateNext({
       viewType: ViewTypeEnum.Html,
-      commandButtonRequest: { newSelection: button.shortString, cancel: button.cancel }
+      commandButtonRequest: { newSelection: button.shortString, cancel: button.cancel || false }
     });
   }
 

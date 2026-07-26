@@ -86,7 +86,7 @@ export class ScreenHostComponent implements OnInit {
   }
 
   public viewType = ViewTypeEnum;
-  public screenSettings: IScreenSettingsBase;
+  public screenSettings?: IScreenSettingsBase | null;
   ngOnInit() {
     this._notificationService.start();
   }

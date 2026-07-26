@@ -29,7 +29,7 @@ export class NavBarComponent implements OnInit {
     });
   }
 
-  public navBar: INavigationBar;
+  public navBar?: INavigationBar;
   public isCollapsed: boolean = false;
 
   ngOnInit() {

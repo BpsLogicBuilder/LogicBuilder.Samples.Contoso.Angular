@@ -1,3 +1,5 @@
+/// <reference types="jasmine" />
+
 import { TestBed, inject } from '@angular/core/testing';
 
 import { GridService } from './grid.service';

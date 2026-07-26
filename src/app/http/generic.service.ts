@@ -24,7 +24,7 @@ export class GenericService {
 
   getItem(requestDetails: IFormRequestDetails): Observable<any> {
     let request: IGetItemServiceRequest = this.getGetItemRequest(requestDetails);
-    return this._http.post<any>(new URL(requestDetails.getUrl, this.baseUrl).href, JSON.stringify(request), this.getPostOptions()).pipe
+    return this._http.post<any>(new URL(requestDetails.getUrl!, this.baseUrl).href, JSON.stringify(request), this.getPostOptions()).pipe
       (
         tap(({ entity, success, errorMessages }: any) => 
         {
@@ -40,7 +40,7 @@ export class GenericService {
 
   getList(requestDetails: IRequestDetails, fieldsSelector: any): Observable<any> {
     let request: IGetListServiceRequest = this.getGetListRequest(requestDetails, fieldsSelector);
-    return this._http.post<any>(new URL(requestDetails.dataSourceUrl, this.baseUrl).href, JSON.stringify(request), this.getPostOptions()).pipe
+    return this._http.post<any>(new URL(requestDetails.dataSourceUrl!, this.baseUrl).href, JSON.stringify(request), this.getPostOptions()).pipe
       (
         tap(({ list, success, errorMessages }: any) => 
         {
@@ -56,7 +56,7 @@ export class GenericService {
 
   deleteItem(item: IBaseModel, requestDetails: IFormRequestDetails): Observable<Response> {
     let request: IDeleteItemServiceRequest = this.getDeleteItemRequest(item);
-    return this._http.post<Response>(new URL(requestDetails.deleteUrl, this.baseUrl).href, JSON.stringify(request), this.getPostOptions()).pipe
+    return this._http.post<Response>(new URL(requestDetails.deleteUrl!, this.baseUrl).href, JSON.stringify(request), this.getPostOptions()).pipe
       (
       tap(data => console.log(JSON.stringify(data))),
       catchError(this.handleError)
@@ -65,7 +65,7 @@ export class GenericService {
 
   updateItem(item: IBaseModel, requestDetails: IFormRequestDetails): Observable<Response> {
     let request: IUpdateItemServiceRequest = this.getUpdateItemRequest(item);
-    return this._http.post<Response>(new URL(requestDetails.updateUrl, this.baseUrl).href, JSON.stringify(request), this.getPostOptions()).pipe
+    return this._http.post<Response>(new URL(requestDetails.updateUrl!, this.baseUrl).href, JSON.stringify(request), this.getPostOptions()).pipe
       (
       tap(data => console.log(JSON.stringify(data))),
       catchError(this.handleError)
@@ -74,7 +74,7 @@ export class GenericService {
 
   insertItem(item: IBaseModel, requestDetails: IFormRequestDetails): Observable<Response> {
     let request: IInsertItemServiceRequest = this.getInsertItemRequest(item);
-    return this._http.post<any>(new URL(requestDetails.addUrl, this.baseUrl).href, JSON.stringify(request), this.getPostOptions()).pipe
+    return this._http.post<any>(new URL(requestDetails.addUrl!, this.baseUrl).href, JSON.stringify(request), this.getPostOptions()).pipe
       (
       tap(data => console.log(JSON.stringify(data))),
       catchError(this.handleError)
@@ -87,8 +87,8 @@ export class GenericService {
 
   private getGetItemRequest(requestDetails: IFormRequestDetails): IGetItemServiceRequest {
     return {
-      modelType: requestDetails.modelType,
-      dataType: requestDetails.dataType,
+      modelType: requestDetails.modelType!,
+      dataType: requestDetails.dataType!,
       selectExpandDefinition: requestDetails.selectExpandDefinition,
       filter: requestDetails.filter
     };
@@ -96,8 +96,8 @@ export class GenericService {
 
   private getGetListRequest(requestDetails: IRequestDetails, fieldsSelector: any): IGetListServiceRequest {
     return {
-      modelType: requestDetails.modelType,
-      dataType: requestDetails.dataType,
+      modelType: requestDetails.modelType!,
+      dataType: requestDetails.dataType!,
       modelReturnType: requestDetails.modelReturnType,
       dataReturnType: requestDetails.dataReturnType,
       selectExpandDefinition: requestDetails.selectExpandDefinition,

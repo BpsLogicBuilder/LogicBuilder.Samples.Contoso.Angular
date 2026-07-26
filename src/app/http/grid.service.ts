@@ -25,8 +25,8 @@ export class GridService {
     const hasGroups = state.group && state.group.length;
     let request: KendoGridDataRequest = {
       options: toDataSourceRequest(state),
-      modelType: requestDetails.modelType,
-      dataType: requestDetails.dataType,
+      modelType: requestDetails.modelType!,
+      dataType: requestDetails.dataType!,
       selectExpandDefinition: requestDetails.selectExpandDefinition
     };
 

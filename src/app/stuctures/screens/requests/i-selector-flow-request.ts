@@ -1,4 +1,4 @@
 export class ISelectorFlowRequest {
     entity: any;
-    reloadItemsFlowName: string;
+    reloadItemsFlowName?: string;
 }
