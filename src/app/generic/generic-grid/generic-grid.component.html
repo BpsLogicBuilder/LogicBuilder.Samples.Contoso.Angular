@@ -145,7 +145,7 @@
       let-aggregates="aggregates"
       let-groupAggregates="groupAggregates"
       #groupHeaderTemplate>
-      @if (aggregates && gridAggregateResult[field]) {
+      @if (aggregates && groupAggregates && groupAggregates[field]) {
         <span>
           @for (agg of aggregates; track agg; let idx = $index) {
             <span>@if (idx !== 0) {
@@ -163,7 +163,7 @@
       let-aggregates="aggregates"
       let-groupAggregates="groupAggregates"
       #groupHeaderTemplate_Date>
-      @if (gridAggregateResult && gridAggregateResult[field]) {
+      @if (aggregates && groupAggregates && groupAggregates[field]) {
         <span>
           @for (agg of aggregates; track agg; let idx = $index) {
             <span>@if (idx !== 0) {
@@ -181,7 +181,7 @@
       let-aggregates="aggregates"
       let-groupAggregates="groupAggregates"
       #groupHeaderTemplate_Currency>
-      @if (gridAggregateResult && gridAggregateResult[field]) {
+      @if (aggregates && groupAggregates && groupAggregates[field]) {
         <span>
           @for (agg of aggregates; track agg; let idx = $index) {
             <span>@if (idx !== 0) {
@@ -199,7 +199,7 @@
       let-aggregates="aggregates"
       let-groupAggregates="groupAggregates"
       #groupFooterTemplate>
-      @if (gridAggregateResult && gridAggregateResult[field]) {
+      @if (aggregates && groupAggregates && groupAggregates[field]) {
         <span>
           @for (agg of aggregates; track agg; let idx = $index) {
             <span>@if (idx !== 0) {
@@ -217,7 +217,7 @@
         let-aggregates="aggregates"
         let-groupAggregates="groupAggregates"
         #groupFooterTemplate_Date>
-        @if (gridAggregateResult && gridAggregateResult[field]) {
+        @if (aggregates && groupAggregates && groupAggregates[field]) {
           <span>
             @for (agg of aggregates; track agg; let idx = $index) {
               <span>@if (idx !== 0) {
@@ -235,7 +235,7 @@
           let-aggregates="aggregates"
           let-groupAggregates="groupAggregates"
           #groupFooterTemplate_Currency>
-          @if (gridAggregateResult && gridAggregateResult[field]) {
+          @if (aggregates && groupAggregates && groupAggregates[field]) {
             <span>
               @for (agg of aggregates; track agg; let idx = $index) {
                 <span>@if (idx !== 0) {
@@ -253,7 +253,7 @@
             let-aggregates="aggregates"
             let-gridAggregateResult="gridAggregateResult"
             #gridFooterTemplate>
-            @if (gridAggregateResult && gridAggregateResult[field]) {
+            @if (aggregates && gridAggregateResult && gridAggregateResult[field]) {
               <span>
                 @for (agg of aggregates; track agg; let idx = $index) {
                   <span>@if (idx !== 0) {
@@ -271,7 +271,7 @@
               let-aggregates="aggregates"
               let-gridAggregateResult="gridAggregateResult"
               #gridFooterTemplate_Date>
-              @if (gridAggregateResult && gridAggregateResult[field]) {
+              @if (aggregates && gridAggregateResult && gridAggregateResult[field]) {
                 <span>
                   @for (agg of aggregates; track agg; let idx = $index) {
                     <span>@if (idx !== 0) {
@@ -289,7 +289,7 @@
                 let-aggregates="aggregates"
                 let-gridAggregateResult="gridAggregateResult"
                 #gridFooterTemplate_Currency>
-                @if (gridAggregateResult && gridAggregateResult[field]) {
+                @if (aggregates && gridAggregateResult && gridAggregateResult[field]) {
                   <span>
                     @for (agg of aggregates; track agg; let idx = $index) {
                       <span>@if (idx !== 0) {

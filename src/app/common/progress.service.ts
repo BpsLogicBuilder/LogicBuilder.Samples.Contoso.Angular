@@ -8,7 +8,7 @@ export class ProgressService {
 
   constructor() { }
 
-  private set(field, target, value) {
+  private set(field: string, target: Record<string, unknown>, value: any) {
     target[field] = value;
     return target;
   }

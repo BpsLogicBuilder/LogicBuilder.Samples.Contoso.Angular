@@ -348,7 +348,7 @@ export class ObjectHelper {
 
         if (conditionGroup.conditionGroups && conditionGroup.conditionGroups.length) {
             conditionGroup.conditionGroups.forEach(cg => {
-                list = listManager.mergeLists<string>(list, ObjectHelper.getConditionsFieldsToWatch(cg, listManager), []);
+                list = listManager.mergeStringArray(list, ObjectHelper.getConditionsFieldsToWatch(cg, listManager));
             });
         }
 

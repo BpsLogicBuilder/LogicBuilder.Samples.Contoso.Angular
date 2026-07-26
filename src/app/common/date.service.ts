@@ -7,7 +7,7 @@ export class DateService {
 
     constructor() { }
 
-    convertToDate(e): Date {
+    convertToDate(e: any): Date | undefined | null {
         if (!e)
             return null;
             

@@ -19,7 +19,7 @@ export class UiNotificationService {
 
   public navBar: Subject<INavigationBar>;
   public screenSettings: Subject<IScreenSettingsBase>;
-  public flowState: IFlowState;
+  public flowState?: IFlowState;
   public errorMessage: any;
 
   public start(): void {

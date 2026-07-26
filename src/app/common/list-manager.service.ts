@@ -31,7 +31,7 @@ export class ListManagerService {
                         entityToSave,
                         originalEntity,
                         formGroup,
-                        (<IGroupBoxSettings>setting).fieldSettings
+                        (<IGroupBoxSettings>setting).fieldSettings || []
                     );
                 }
                 else if (setting.abstractControlType === abstractControlKind.formGroup) {
@@ -65,9 +65,9 @@ export class ListManagerService {
                             //the entity state for child items must be defined individually
                             entityToSave[setting.field][i] = this.updateFormEntityState(//e.g. entityToSave[setting.field] is instructor.courses
                                 entityToSave[setting.field][i], //e.g. entityToSave[setting.field][i] is instructor.courses[i]
-                                null,
+                               <EntityType>{},
                                 <UntypedFormGroup>(<UntypedFormArray>formGroup.controls[setting.field]).at(parseInt(i)),
-                                (<IFormGroupArraySettings>setting).fieldSettings
+                                (<IFormGroupArraySettings>setting).fieldSettings || []
                             );
                         }
                     }
@@ -82,7 +82,7 @@ export class ListManagerService {
                         entityToSave,
                         originalEntity,
                         formGroup,
-                        (<IGroupBoxSettings>setting).fieldSettings
+                        (<IGroupBoxSettings>setting).fieldSettings || []
                     );
                 }
                 else if (setting.abstractControlType == abstractControlKind.formGroup) {
@@ -100,7 +100,7 @@ export class ListManagerService {
                         entityToSave[setting.field],// instructor.officeAssignment officeAssignment is a child entity
                         originalEntity[setting.field], //original instructor.officeAssignment
                         <UntypedFormGroup>formGroup.controls[setting.field], //child form group
-                        (<IFormGroupSettings>setting).fieldSettings //child formGroup setting
+                        (<IFormGroupSettings>setting).fieldSettings || [] //child formGroup setting
                         //isInsert is always false at this point
                     );
 
@@ -118,7 +118,7 @@ export class ListManagerService {
                         for (let i in entityToSave[setting.field]) {
                             if (originalEntity[setting.field]
                                 && originalEntity[setting.field].length
-                                && this.itemExists<EntityType>(entityToSave[setting.field][i], originalEntity[setting.field], (<IFormGroupArraySettings>setting).keyFields)) {
+                                && this.itemExists<EntityType>(entityToSave[setting.field][i], originalEntity[setting.field], <string[]>(<IFormGroupArraySettings>setting).keyFields)) {
 
                                 let formArray: UntypedFormArray = <UntypedFormArray>formGroup.controls[setting.field];
                                 //let obj2 = formGroup.controls[setting.field][i];
@@ -127,7 +127,7 @@ export class ListManagerService {
                                     entityToSave[setting.field][i], //e.g. entityToSave[setting.field][i] is instructor.courses[i]
                                     originalEntity[setting.field][i],
                                     <UntypedFormGroup>formArray.at(parseInt(i)),
-                                    (<IFormGroupArraySettings>setting).fieldSettings
+                                    (<IFormGroupArraySettings>setting).fieldSettings || []
                                     //isInsert is always false at this point
                                 );
                             }
@@ -139,9 +139,9 @@ export class ListManagerService {
                                 //the entity state for child items must be defined individually
                                 entityToSave[setting.field][i] = this.updateFormEntityState(//e.g. entityToSave[setting.field] is instructor.courses
                                     entityToSave[setting.field][i], //e.g. entityToSave[setting.field][i] is instructor.courses[i]
-                                    null,
+                                    <EntityType>{},
                                     <UntypedFormGroup>(<UntypedFormArray>formGroup.controls[setting.field]).at(parseInt(i)),
-                                    (<IFormGroupArraySettings>setting).fieldSettings
+                                    (<IFormGroupArraySettings>setting).fieldSettings || []
                                 );
                             }
                         }
@@ -151,7 +151,7 @@ export class ListManagerService {
                         for (let i in originalEntity[setting.field]) {
                             if (entityToSave[setting.field]
                                 && entityToSave[setting.field].length
-                                && !this.itemExists<EntityType>(originalEntity[setting.field][i], entityToSave[setting.field] || [], (<IFormGroupArraySettings>setting).keyFields)) {
+                                && !this.itemExists<EntityType>(originalEntity[setting.field][i], entityToSave[setting.field] || [], <string[]>(<IFormGroupArraySettings>setting).keyFields)) {
                                 //Add the deleted field
                                 entityToSave[setting.field][i] = originalEntity[setting.field][i];
                                 //Set its entity state to deleted.
@@ -204,35 +204,17 @@ export class ListManagerService {
         return entityToSave;
     }
 
-    public itemExists<T>(item: T, arr: T[], matchprops: string[]): boolean {
+    public itemExists<T extends Record<string, unknown>>(item: T, arr: T[], matchprops: string[]): boolean {
         return ListManager.itemExists<T>(item, arr, matchprops);
     }
 
-    public mergeLists<T>(arr1: T[], arr2: T[], matchprops: string[]): T[] {
-        return ListManager.mergeLists<T>(arr1, arr2, matchprops);
-    }
-
-    public renameProperties<T>(arr1: T[], props1: string[], props2: string[]) {
-        arr1.forEach(element => {
-            for (let i in props1) {
-                if (props1[i] !== props2[i]) {
-                    Object.defineProperty
-                        (
-                        element,
-                        props2[i],
-                        Object.getOwnPropertyDescriptor(element, props1[i])
-                        );
-                    delete element[props1[i]];
-                }
-            }
-        });
-
-        return arr1;
+    public mergeStringArray(arr1: string[], arr2: string[]): string[] {
+        return ListManager.mergeStringArray(arr1, arr2);
     }
 }
 
 export class ListManager {
-    static itemExists<T>(item: T, arr: T[], matchprops: string[]): boolean {
+    static itemExists<T extends Record<string, unknown>>(item: T, arr: T[], matchprops: string[]): boolean {
         if (!matchprops) {
             throw new Error("Key fields are required: (ListManagerService.itemExists)");
         }
@@ -254,24 +236,14 @@ export class ListManager {
         return found;
     }
 
-    static mergeLists<T>(arr1: T[], arr2: T[], matchprops: string[]): T[] {
-        let arr3: T[] = [];
+    static mergeStringArray(arr1: string[], arr2: string[]): string[] {
+        let arr3: string[] = [];
         for (let i in arr1) {
             var shared = false;
             for (let j in arr2) {
                 let allKeysMetch: boolean = true;
-                if (matchprops && matchprops.length) {
-                    for (let k in matchprops) {
-                        if (arr2[j][matchprops[k]] != arr1[i][matchprops[k]]) {
-                            allKeysMetch = false;
-                            break;
-                        }
-                    }
-                }
-                else {
-                    if (arr2[j] != arr1[i]) {
-                        allKeysMetch = false;
-                    }
+                if (arr2[j] != arr1[i]) {
+                    allKeysMetch = false;
                 }
 
                 if (allKeysMetch) {
@@ -284,37 +256,5 @@ export class ListManager {
         }
 
         return arr3.concat(arr2);
-    }
-
-    static removeItems<T>(arr1: T[], arr2: T[], matchprops: string[]): T[] {
-        let arr3: T[] = [];
-        for (let i in arr1) {
-            var shared = false;
-            for (let j in arr2) {
-                let allKeysMetch: boolean = true;
-                if (matchprops && matchprops.length) {
-                    for (let k in matchprops) {
-                        if (arr2[j][matchprops[k]] != arr1[i][matchprops[k]]) {
-                            allKeysMetch = false;
-                            break;
-                        }
-                    }
-                }
-                else {
-                    if (arr2[j] != arr1[i]) {
-                        allKeysMetch = false;
-                    }
-                }
-
-                if (allKeysMetch) {
-                    shared = true;
-                    break;
-                }
-            }
-
-            if (!shared) arr3.push(arr1[i])
-        }
-
-        return arr3;
     }
 }

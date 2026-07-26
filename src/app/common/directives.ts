@@ -44,7 +44,7 @@ export class Directives
                                 fieldBeingUpdated: fieldBeingUpdated,
                                 newValue: null,
                                 targetControlName: targetField,
-                                targetControlFieldSetting: <IFormItemSetting>Directives.getFormControlSetting(groupSettings.fieldSettings, targetField),
+                                targetControlFieldSetting: <IFormItemSetting>Directives.getFormControlSetting(<IFormItemSetting[]>groupSettings.fieldSettings, targetField),
                                 conditionalDirectives: conditionalDirectives,
                                 fb: formBuilder
                             });
@@ -74,7 +74,7 @@ export class Directives
                                 fieldBeingUpdated: fieldBeingUpdated,
                                 newValue: value,
                                 targetControlName: targetField,
-                                targetControlFieldSetting: <IFormItemSetting>Directives.getFormControlSetting(groupSettings.fieldSettings, targetField),
+                                targetControlFieldSetting: <IFormItemSetting>Directives.getFormControlSetting(<IFormItemSetting[]>groupSettings.fieldSettings, targetField),
                                 conditionalDirectives: conditionalDirectives,
                                 fb: formBuilder
                             });
@@ -83,14 +83,14 @@ export class Directives
             });
         });
 
-        for (let setting of groupSettings.fieldSettings)
+        for (let setting of <IFormItemSetting[]>groupSettings.fieldSettings)
         {
             if (setting.abstractControlType == abstractControlKind.groupBox)
             {//Directives.getFormControlSetting gets the fields for IGroupBoxSettings so nothing to do here
             }
             else if (setting.abstractControlType == abstractControlKind.formGroup && formGroup.controls[setting.field])
             {
-                Directives.watchFields((<IFormGroupSettings>setting), <UntypedFormGroup>formGroup.controls[setting.field], (<IFormGroupSettings>setting).conditionalDirectives, formBuilder);
+                Directives.watchFields((<IFormGroupSettings>setting), <UntypedFormGroup>formGroup.controls[setting.field], (<IFormGroupSettings>setting).conditionalDirectives || {}, formBuilder);
             }
             else if (setting.abstractControlType == abstractControlKind.formGroupArray && formGroup.controls[setting.field])
             {
@@ -100,14 +100,14 @@ export class Directives
                     formGroupArray.controls.forEach(control => {
                         let fg: UntypedFormGroup = <UntypedFormGroup>control;
 
-                        Directives.watchFields((<IFormGroupArraySettings>setting), fg, (<IFormGroupArraySettings>setting).conditionalDirectives, formBuilder);
+                        Directives.watchFields((<IFormGroupArraySettings>setting), fg, (<IFormGroupArraySettings>setting).conditionalDirectives || {}, formBuilder);
                     });
                 }
             }
         }
     }
 
-    static getFormControlSetting(fieldSettings: IFormItemSetting[], fieldName: string): IFormItemSetting
+    static getFormControlSetting(fieldSettings: IFormItemSetting[], fieldName: string): IFormItemSetting | null
     {
         if (!(fieldSettings && fieldSettings.length))
             return null;
@@ -116,7 +116,7 @@ export class Directives
         {
             if (field.abstractControlType === abstractControlKind.groupBox)
             {
-                for (let groupBoxField of (<IGroupBoxSettings>field).fieldSettings)
+                for (let groupBoxField of <IFormItemSetting[]>(<IGroupBoxSettings>field).fieldSettings)
                 {
                     if (groupBoxField.field === fieldName)
                         return groupBoxField;
@@ -160,7 +160,7 @@ export class Directives
     {
         if (args.result)
         {
-            let formControl: AbstractControl = args.formGroup.get(args.targetControlName);
+            let formControl: AbstractControl | null = args.formGroup.get(args.targetControlName);
             if (!formControl)
                 return;//should never happen
 
@@ -183,23 +183,23 @@ export class Directives
                     if (ObjectHelper.getConditionsFieldsToWatch(directive.conditionGroup, args.formGroup.value).includes(args.targetControlName))
                     {
                         let control = args.formGroup.get(args.targetControlName);
-                        control.valueChanges
-                            .subscribe(value =>
-                            {
-                                Directives.handleDirective({
-                                    directive: directive,
-                                    formGroup: args.formGroup,
-                                    groupSettings: (<IEditDirectiveFunctionArgs>args).groupSettings,
-                                    fieldBeingUpdated: args.targetControlName,
-                                    newValue: value,
-                                    targetControlName: targetField,
-                                    targetControlFieldSetting: <IFormItemSetting>args.targetControlFieldSetting,
-                                    conditionalDirectives: args.conditionalDirectives,
-                                    fb: args.fb
-                                });
+                        if (!control)
+                            return;
 
-
+                        control.valueChanges.subscribe(value =>
+                        {
+                            Directives.handleDirective({
+                                directive: directive,
+                                formGroup: args.formGroup,
+                                groupSettings: (<IEditDirectiveFunctionArgs>args).groupSettings,
+                                fieldBeingUpdated: args.targetControlName,
+                                newValue: value,
+                                targetControlName: targetField,
+                                targetControlFieldSetting: <IFormItemSetting>args.targetControlFieldSetting,
+                                conditionalDirectives: args.conditionalDirectives,
+                                fb: args.fb
                             });
+                        });
                     }
                 });
             });
@@ -210,7 +210,7 @@ export class Directives
     {
         if (args.result)
         {
-            let formControl: AbstractControl = args.formGroup.get(args.targetControlName);
+            let formControl: AbstractControl | null = args.formGroup.get(args.targetControlName);
             if (!formControl)
                 return;//should never happen
 
@@ -225,7 +225,7 @@ export class Directives
     {
         if (args.result)
         {
-            let formControl: AbstractControl = args.formGroup.get(args.targetControlName);
+            let formControl: AbstractControl | null = args.formGroup.get(args.targetControlName);
             if (!formControl)
                 return;//should never happen
 
@@ -238,7 +238,7 @@ export class Directives
 
     static disableIf(args: IEditDirectiveFunctionArgs)
     {
-        let formControl: AbstractControl = args.formGroup.get(args.targetControlName);
+        let formControl: AbstractControl | null = args.formGroup.get(args.targetControlName);
         if (!formControl)
             return;//should never happen
 
@@ -265,7 +265,7 @@ export class Directives
         if (!(questionSetting.validationSetting && questionSetting.validationSetting.validators && questionSetting.validationSetting.validators.length))
             return false;
 
-        let validators: IValidatorDescription[] = questionSetting.validationSetting.validators.filter(v => v.functionName === validator);
+        let validators: IValidatorDescription[] = questionSetting.validationSetting.validators.filter((v: IValidatorDescription) => v.functionName === validator);
 
         return validators.length > 0;
     }
@@ -281,12 +281,12 @@ export class Directives
         return true;
     }
 
-    static getValidator(control: UntypedFormControl, validator: string, questionSetting: IFormItemSetting): IValidatorDescription
+    static getValidator(control: UntypedFormControl, validator: string, questionSetting: IFormItemSetting): IValidatorDescription | null
     {
         if (!(questionSetting.unchangedValidationSetting && questionSetting.unchangedValidationSetting.validators && questionSetting.unchangedValidationSetting.validators.length))
             return null;
 
-        return questionSetting.unchangedValidationSetting.validators.find(v => v.functionName === validator);
+        return questionSetting.unchangedValidationSetting.validators.find((v: IValidatorDescription) => v.functionName === validator);
     }
 
     static RemoveValidators(control: UntypedFormControl, validatorsToRemove: string[], questionSetting: IFormItemSetting)
@@ -296,7 +296,7 @@ export class Directives
 
         if (questionSetting.validationSetting && questionSetting.unchangedValidationSetting.validators)
         {
-            let validators: IValidatorDescription[] = questionSetting.validationSetting.validators.filter(v => !validatorsToRemove.includes(v.functionName));
+            let validators: IValidatorDescription[] = questionSetting.validationSetting.validators.filter((v: IValidatorDescription) => !validatorsToRemove.includes(v.functionName));
             if (validators)
             {
                 questionSetting.validationSetting.validators = validators;
@@ -320,7 +320,7 @@ export class Directives
             {
                 if (!Directives.hasValidator(formControl, v, questionSetting))
                 {
-                    let newValidator: IValidatorDescription = Directives.getValidator(formControl, v, questionSetting);
+                    let newValidator: IValidatorDescription | null = Directives.getValidator(formControl, v, questionSetting);
                     if (newValidator)
                         questionSetting.validationSetting.validators.push(newValidator);
                 }
@@ -350,7 +350,14 @@ export class Directives
             ? [directiveArguments].concat(ObjectHelper.getArgumentsArray(directive.arguments))
             : [directiveArguments];
 
-        let directiveClass = DirectivesManager.GetDirectiveClass(directive.className);
-        return directiveClass[directive.functionName].apply(directiveClass, args)
+        let directiveClass = DirectivesManager.GetDirectiveClass(directive.className) as Record<string, any> | undefined;
+        if (!directiveClass) {
+            return null;
+        }
+        var directiveFunction = directiveClass[directive.functionName];
+        if (!directiveFunction)
+            return null;
+        
+        return directiveFunction.apply(directiveClass, args)
     }
 }

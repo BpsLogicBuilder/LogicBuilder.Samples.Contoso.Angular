@@ -33,7 +33,7 @@ export class CustomValidators
             const formGroup: UntypedFormGroup = <UntypedFormGroup>c.parent;
             const otherControl = formGroup.get(otherField);
 
-            if (!otherControl.value)
+            if (!otherControl?.value)
                 return null;
     
             if (c.value === otherControl.value)
