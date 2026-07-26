@@ -13,7 +13,7 @@
       <ul class="navbar-nav me-auto">
         @for (item of navBar.menuItems; track item.targetModule) {
           <li [ngClass]="{'active': item.targetModule === navBar.targetModule}" class="nav-item">
-            <a [@itemState]="item.targetModule === navBar.currentModule ? 'active' : 'inactive'" [attr.href]="item.targetModule === navBar.currentModule ? null : '#'"
+            <a [class.nav-link-active]="item.targetModule === navBar.currentModule" [attr.href]="item.targetModule === navBar.currentModule ? null : '#'"
               onclick="return false;"
               class="nav-link"
             (click)="item.targetModule === navBar.currentModule ? doNothing() : menuItemClick(item.targetModule, item.initialModule)">{{item.text}}</a>

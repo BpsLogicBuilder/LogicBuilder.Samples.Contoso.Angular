@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { provideAnimations } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
@@ -46,12 +46,11 @@ import { GenericListComponent } from './generic/generic-list/generic-list.compon
         GenericListComponent
     ],
     bootstrap: [AppComponent], imports: [BrowserModule,
-        BrowserAnimationsModule,
         ButtonsModule,
         DropDownsModule,
         DropDownListModule,
         DatePickerModule,
         GridModule,
         NgbModule,
-        ReactiveFormsModule], providers: [provideHttpClient(withInterceptorsFromDi())] })
+        ReactiveFormsModule], providers: [provideAnimations(), provideHttpClient(withInterceptorsFromDi())] })
 export class AppModule { }

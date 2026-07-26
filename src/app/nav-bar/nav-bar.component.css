@@ -1,3 +1,19 @@
+/* Smooth state transitions for nav links */
+.nav-link {
+    transition: 
+        background-color 0.2s ease-in 100ms, 
+        color 0.2s ease-in 100ms,
+        transform 0.2s ease-in 100ms;
+    background-color: inherit;
+    color: inherit;
+}
+
+.nav-link-active {
+    background-color: #4189C7 !important;
+    color: white !important;
+    transform: scale(1.02);
+}
+
 li .glyphicon {
     margin-right: 10px;
 }

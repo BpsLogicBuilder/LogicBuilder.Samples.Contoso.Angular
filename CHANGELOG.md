@@ -1,3 +1,4 @@
+* 2026-07-26 - AB#175: Migrate to modern CSS style animations.
 * 2026-07-26 - AB#175: Fix remaining lint warnings.
 * 2026-07-26 - AB#175: Fix lint warnings in generic.
 * 2026-07-26 - AB#175: Fix lint warnings in common.
