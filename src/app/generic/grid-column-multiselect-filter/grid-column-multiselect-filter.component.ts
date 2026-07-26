@@ -10,13 +10,13 @@ import { GenericService } from '../../http/generic.service';
     standalone: false
 })
 export class GridColumnMultiselectFilterComponent implements OnInit, AfterViewInit {
-  @Input() public isPrimitive: boolean;
-  @Input() public currentFilter: CompositeFilterDescriptor;
+  @Input() public isPrimitive!: boolean;
+  @Input() public currentFilter!: CompositeFilterDescriptor;
   @Input() public filterMenuTemplate: any;
-  @Input() public textField;
-  @Input() public valueField;
-  @Input() public filterService: FilterService;
-  @Input() public field: string;
+  @Input() public textField!: string;
+  @Input() public valueField: any;
+  @Input() public filterService!: FilterService;
+  @Input() public field!: string;
   @Output() public valueChange = new EventEmitter<number[]>();
 
   constructor(private _genericService: GenericService) { }
@@ -36,11 +36,11 @@ export class GridColumnMultiselectFilterComponent implements OnInit, AfterViewIn
   public ngAfterViewInit() {
   }
 
-  public isItemSelected(item) {
+  public isItemSelected(item : any) {
     return this.value.some(x => x === this.valueAccessor(item));
   }
 
-  public onSelectionChange(item) {
+  public onSelectionChange(item : any) {
     if (this.value.some(x => x === item)) {
       this.value = this.value.filter(x => x !== item);
     } else {
@@ -59,7 +59,7 @@ export class GridColumnMultiselectFilterComponent implements OnInit, AfterViewIn
 
   public onInput(e: any) {
     this.currentData = distinct([
-      ...this.currentData.filter(dataItem => this.value.some(val => val === this.valueAccessor(dataItem))),
+      ...this.currentData.filter((dataItem : any) => this.value.some(val => val === this.valueAccessor(dataItem))),
       ...filterBy(this.data, {
         operator: 'contains',
         field: this.textField,
@@ -75,7 +75,9 @@ export class GridColumnMultiselectFilterComponent implements OnInit, AfterViewIn
       console.log("this.MultiSelect Returned:   " + JSON.stringify(this.data));
 
       this.currentData = this.data;
-      this.value = this.currentFilter.filters.map((f: FilterDescriptor) => f.value);
+      this.value = (this.currentFilter?.filters ?? [])
+        .filter((f): f is FilterDescriptor => 'operator' in f)//if the f item has an operator property then it is of type FilterDescriptor
+        .map((f) => f.value);
 
       this.showFilter = typeof this.textAccessor(this.currentData[0]) === 'string';
     });

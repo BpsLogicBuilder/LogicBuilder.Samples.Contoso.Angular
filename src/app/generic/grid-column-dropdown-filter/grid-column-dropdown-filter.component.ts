@@ -15,10 +15,10 @@ export class GridColumnDropdownFilterComponent extends BaseFilterCellComponent i
     super(filterService);
   }
 
-  @Input() public filter: CompositeFilterDescriptor;
+  @Input() public filter!: CompositeFilterDescriptor;
   @Input() public filterRowTemplate: any;
-  @Input() public textField: string;
-  @Input() public valueField: string;
+  @Input() public textField!: string;
+  @Input() public valueField!: string;
 
   public data: any;
 

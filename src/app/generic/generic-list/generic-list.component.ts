@@ -13,17 +13,17 @@ import { ViewTypeEnum } from '../../stuctures/screens/i-view-type';
     standalone: false
 })
 export class GenericListComponent implements OnInit {
-  @ViewChild('textTemplate', { static: true }) textTemplate: TemplateRef<any>;
-  @ViewChild('dateTemplate', { static: true }) dateTemplate: TemplateRef<any>;
+  @ViewChild('textTemplate', { static: true }) textTemplate!: TemplateRef<any>;
+  @ViewChild('dateTemplate', { static: true }) dateTemplate!: TemplateRef<any>;
 
-  @Input() settings: IListFormSettings;
-  @Input() public commandButtons: ICommandButton[];
+  @Input() settings!: IListFormSettings;
+  @Input() public commandButtons!: ICommandButton[];
 
   constructor(private _genericService: GenericService, private _uiNotificationService: UiNotificationService) { }
 
-  public listData: any[];
+  public listData?: any[];
 
-  public getTemplate(templateName: string) {
+  public getTemplate(templateName: 'textTemplate' | 'dateTemplate') {
     return this[templateName];
   }
 
@@ -47,7 +47,7 @@ export class GenericListComponent implements OnInit {
   navigateNext(button: ICommandButton) {
     this._uiNotificationService.navigateNext({
       viewType: ViewTypeEnum.List,
-      commandButtonRequest: { newSelection: button.shortString, cancel: button.cancel }
+      commandButtonRequest: { newSelection: button.shortString, cancel: button.cancel || false }
     });
   }
 }

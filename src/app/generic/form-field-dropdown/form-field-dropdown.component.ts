@@ -20,16 +20,16 @@ import { ISelectorFlowResponse } from '../../stuctures/i-selector-flow-response'
 })
 export class FormFieldDropdownComponent implements OnInit, ControlValueAccessor
 {
-  @Input() public dropDownTemplate: IDropDownTemplate;
-  @Input() public textField: string;
-  @Input() public valueField: string;
+  @Input() public dropDownTemplate!: IDropDownTemplate;
+  @Input() public textField!: string;
+  @Input() public valueField!: string;
   @Input() public filterValueSourceItem?: any;
   @Input() public modelType?: any;
 
-  _reload: string;
+  _reload?: string;
   get reload()
   {
-    return this._reload;
+    return this._reload || "";
   }
 
   @Input('reload')
@@ -44,7 +44,7 @@ export class FormFieldDropdownComponent implements OnInit, ControlValueAccessor
     this._clear = value;
   }
 
-  _clear: string;
+  _clear?: string;
   @Input('clear')
   set clear(value: string)
   {
@@ -55,7 +55,7 @@ export class FormFieldDropdownComponent implements OnInit, ControlValueAccessor
 
   get clear()
   {
-    return this._clear;
+    return this._clear || "";
   }
 
   constructor(private _genericService: GenericService, private _settingsService: SettingsService)

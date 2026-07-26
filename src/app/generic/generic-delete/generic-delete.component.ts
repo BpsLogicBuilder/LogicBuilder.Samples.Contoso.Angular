@@ -13,23 +13,26 @@ import { ViewTypeEnum } from '../../stuctures/screens/i-view-type';
     standalone: false
 })
 export class GenericDeleteComponent implements OnInit {
-  @ViewChild('currencyTemplate', { static: true }) currencyTemplate: TemplateRef<any>;
-  @ViewChild('textTemplate', { static: true }) textTemplate: TemplateRef<any>;
-  @ViewChild('dateTemplate', { static: true }) dateTemplate: TemplateRef<any>;
-  @ViewChild('listTemplate', { static: true }) listTemplate: TemplateRef<any>;
+  @ViewChild('currencyTemplate', { static: true }) currencyTemplate!: TemplateRef<any>;
+  @ViewChild('textTemplate', { static: true }) textTemplate!: TemplateRef<any>;
+  @ViewChild('valueTextTemplate', { static: true }) valueTextTemplate!: TemplateRef<any>;
+  @ViewChild('booleanTemplate', { static: true }) booleanTemplate!: TemplateRef<any>;
+  @ViewChild('dateTemplate', { static: true }) dateTemplate!: TemplateRef<any>;
+  @ViewChild('listTemplate', { static: true }) listTemplate!: TemplateRef<any>;
+  @ViewChild('groupTemplate', { static: true }) groupTemplate!: TemplateRef<any>;
 
-  @Input() settings: IDetailFormSettings;
-  @Input() public commandButtons: ICommandButton[];
+  @Input() settings!: IDetailFormSettings;
+  @Input() public commandButtons!: ICommandButton[];
 
   constructor(private _genericService: GenericService,
     private _uiNotificationService: UiNotificationService) { }
 
   public detailType = detailKind;
-  public entity: EntityType;
-  public errorMessage: string;
-  public formSettings: IDetailFormSettings;
+  public entity?: EntityType;
+  public errorMessage?: string;
+  public formSettings?: IDetailFormSettings;
 
-  public getTemplate(templateName: string) {
+  public getTemplate(templateName: 'currencyTemplate' | 'textTemplate' | 'valueTextTemplate' | 'booleanTemplate' | 'dateTemplate' | 'listTemplate' | 'groupTemplate') {
     return this[templateName];
   }
 
@@ -53,7 +56,7 @@ export class GenericDeleteComponent implements OnInit {
   }
 
   getItem() {
-    this._genericService.getItem(this.formSettings.requestDetails).subscribe(
+    this._genericService.getItem(this.formSettings?.requestDetails || {}).subscribe(
       itm => {
         this.entity = itm;
       },
@@ -61,11 +64,11 @@ export class GenericDeleteComponent implements OnInit {
   }
 
   submitClick(button: ICommandButton) {
-    this._genericService.deleteItem(this.entity, this.formSettings.requestDetails)
+    this._genericService.deleteItem(<EntityType>this.entity, this.formSettings?.requestDetails || {})
       .subscribe(response => {
         this._uiNotificationService.navigateNext({
           viewType: ViewTypeEnum.Delete,
-          commandButtonRequest: { newSelection: button.shortString, cancel: button.cancel }
+          commandButtonRequest: { newSelection: button.shortString, cancel: button.cancel || false }
         });
       },
         error => this.errorMessage = <any>error);
@@ -74,7 +77,7 @@ export class GenericDeleteComponent implements OnInit {
   navigateNext(button: ICommandButton) {
     this._uiNotificationService.navigateNext({
       viewType: ViewTypeEnum.Delete,
-      commandButtonRequest: { newSelection: button.shortString, cancel: button.cancel }
+      commandButtonRequest: { newSelection: button.shortString, cancel: button.cancel || false }
     });
   }
 }

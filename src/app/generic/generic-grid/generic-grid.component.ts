@@ -21,35 +21,49 @@ import { EntityType } from '../../stuctures/screens/i-base-model';
     standalone: false
 })
 export class GenericGridComponent implements OnInit {
-  @ViewChild('gridCellTemplate_Date', { static: true }) gridCellTemplate_Date: TemplateRef<any>;
-  @ViewChild('gridCellTemplate_Currency', { static: true }) gridCellTemplate_Currency: TemplateRef<any>;
-  @ViewChild('groupHeaderTemplate', { static: true }) groupHeaderTemplate: TemplateRef<any>;
-  @ViewChild('groupHeaderTemplate_Date', { static: true }) groupHeaderTemplate_Date: TemplateRef<any>;
-  @ViewChild('groupHeaderTemplate_Currency', { static: true }) groupHeaderTemplate_Currency: TemplateRef<any>;
-  @ViewChild('groupFooterTemplate', { static: true }) groupFooterTemplate: TemplateRef<any>;
-  @ViewChild('groupFooterTemplate_Date', { static: true }) groupFooterTemplate_Date: TemplateRef<any>;
-  @ViewChild('groupFooterTemplate_Currency', { static: true }) groupFooterTemplate_Currency: TemplateRef<any>;
-  @ViewChild('gridFooterTemplate', { static: true }) gridFooterTemplate: TemplateRef<any>;
-  @ViewChild('gridFooterTemplate_Date', { static: true }) gridFooterTemplate_Date: TemplateRef<any>;
-  @ViewChild('gridFooterTemplate_Currency', { static: true }) gridFooterTemplate_Currency: TemplateRef<any>;
-  @ViewChild('itemListTemplate', { static: true }) itemListTemplate: TemplateRef<any>;
-  @ViewChild('filterRowTemplateDropDown', { static: true }) filterRowTemplateDropDown: TemplateRef<any>;
-  @ViewChild('filterMenuTemplateMultiSelect', { static: true }) filterMenuTemplateMultiSelect: TemplateRef<any>;
+  @ViewChild('gridCellTemplate_Date', { static: true }) gridCellTemplate_Date!: TemplateRef<any>;
+  @ViewChild('gridCellTemplate_Currency', { static: true }) gridCellTemplate_Currency!: TemplateRef<any>;
+  @ViewChild('groupHeaderTemplate', { static: true }) groupHeaderTemplate!: TemplateRef<any>;
+  @ViewChild('groupHeaderTemplate_Date', { static: true }) groupHeaderTemplate_Date!: TemplateRef<any>;
+  @ViewChild('groupHeaderTemplate_Currency', { static: true }) groupHeaderTemplate_Currency!: TemplateRef<any>;
+  @ViewChild('groupFooterTemplate', { static: true }) groupFooterTemplate!: TemplateRef<any>;
+  @ViewChild('groupFooterTemplate_Date', { static: true }) groupFooterTemplate_Date!: TemplateRef<any>;
+  @ViewChild('groupFooterTemplate_Currency', { static: true }) groupFooterTemplate_Currency!: TemplateRef<any>;
+  @ViewChild('gridFooterTemplate', { static: true }) gridFooterTemplate!: TemplateRef<any>;
+  @ViewChild('gridFooterTemplate_Date', { static: true }) gridFooterTemplate_Date!: TemplateRef<any>;
+  @ViewChild('gridFooterTemplate_Currency', { static: true }) gridFooterTemplate_Currency!: TemplateRef<any>;
+  @ViewChild('itemListTemplate', { static: true }) itemListTemplate!: TemplateRef<any>;
+  @ViewChild('filterRowTemplateDropDown', { static: true }) filterRowTemplateDropDown!: TemplateRef<any>;
+  @ViewChild('filterMenuTemplateMultiSelect', { static: true }) filterMenuTemplateMultiSelect!: TemplateRef<any>;
 
-  @Input() settings: IGridSettings;
-  @Input() public commandButtons: ICommandButton[];
+  @Input() settings!: IGridSettings;
+  @Input() public commandButtons!: ICommandButton[];
   @Input() public filterValueSourceItem?: any;
 
   constructor(private _gridService: GridService, private _uiNotificationService: UiNotificationService) { }
 
-  public gridButtons: ICommandButton[];
-  public aggregates: any[];
-  public items: IGridResult;
+  public gridButtons?: ICommandButton[];
+  public aggregates?: any[];
+  public items?: IGridResult;
   public aggregateResult: any = undefined;
-  public gridSettings: IGridSettings;
-  public state: DataSourceRequestState;
+  public gridSettings?: IGridSettings;
+  public state?: DataSourceRequestState;
 
-  public getTemplate(templateName: string) {
+  public getTemplate(templateName: 'gridCellTemplate_Date'
+    | 'gridCellTemplate_Currency'
+    | 'groupHeaderTemplate'
+    | 'groupHeaderTemplate_Date'
+    | 'groupHeaderTemplate_Currency'
+    | 'groupFooterTemplate'
+    | 'groupFooterTemplate_Date'
+    | 'groupFooterTemplate_Currency'
+    | 'gridFooterTemplate'
+    | 'gridFooterTemplate_Date'
+    | 'gridFooterTemplate_Currency'
+    | 'itemListTemplate'
+    | 'filterRowTemplateDropDown'
+    | 'filterMenuTemplateMultiSelect'
+  ) {
     return this[templateName];
   }
 
@@ -63,11 +77,11 @@ export class GenericGridComponent implements OnInit {
   public getRowFilterContext(filter: CompositeFilterDescriptor, columnSetting: IColumnSettings) {
     return {
       $implicit: filter,
-      isPrimitive: columnSetting.filterRowTemplate.isPrimitive,
+      isPrimitive: columnSetting.filterRowTemplate?.isPrimitive,
       field: columnSetting.field,
       filterRowTemplate: columnSetting.filterRowTemplate,
-      textField: columnSetting.filterRowTemplate.textField,
-      valueField: columnSetting.filterRowTemplate.valueField
+      textField: columnSetting.filterRowTemplate?.textField,
+      valueField: columnSetting.filterRowTemplate?.valueField
     }
   }
 
@@ -75,11 +89,11 @@ export class GenericGridComponent implements OnInit {
     return {
       $implicit: filter,
       filterService: filterService,
-      isPrimitive: columnSetting.filterMenuTemplate.isPrimitive,
+      isPrimitive: columnSetting.filterMenuTemplate?.isPrimitive,
       field: columnSetting.field,
       filterMenuTemplate: columnSetting.filterMenuTemplate,
-      textField: columnSetting.filterMenuTemplate.textField,
-      valueField: columnSetting.filterMenuTemplate.valueField
+      textField: columnSetting.filterMenuTemplate?.textField,
+      valueField: columnSetting.filterMenuTemplate?.valueField
     }
   }
 
@@ -87,7 +101,7 @@ export class GenericGridComponent implements OnInit {
     return {
       $implicit: dataItem,
       field: columnSetting.field,
-      displayMember: columnSetting.cellListTemplate.displayMember
+      displayMember: columnSetting.cellListTemplate?.displayMember
     }
   }
 
@@ -95,7 +109,7 @@ export class GenericGridComponent implements OnInit {
     return {
       field: columnSetting.field,
       columnTitle: columnSetting.title,
-      aggregates: columnSetting.groupFooterTemplate.aggregates,
+      aggregates: columnSetting.groupFooterTemplate?.aggregates,
       groupAggregates: groupAggregates
     }
   }
@@ -104,7 +118,7 @@ export class GenericGridComponent implements OnInit {
     return {
       field: columnSetting.field,
       columnTitle: columnSetting.title,
-      aggregates: columnSetting.groupHeaderTemplate.aggregates,
+      aggregates: columnSetting.groupHeaderTemplate?.aggregates,
       groupAggregates: groupAggregates.aggregates
     }
   }
@@ -113,18 +127,18 @@ export class GenericGridComponent implements OnInit {
     return {
       field: columnSetting.field,
       columnTitle: columnSetting.title,
-      aggregates: columnSetting.groupFooterTemplate.aggregates,
+      aggregates: columnSetting.groupFooterTemplate?.aggregates,
       gridAggregateResult: gridAggregateResult
     }
   }
 
   public dataStateChange(state: DataStateChangeEvent): void {
     if (state && state.group) {
-      state.group.map(group => group.aggregates = this.gridSettings.aggregates);
+      state.group.map(group => group.aggregates = this.gridSettings?.aggregates);
     }
 
     this.state = state;
-    this.state.aggregates = this.gridSettings.aggregates;
+    this.state.aggregates = this.gridSettings?.aggregates;
 
     this.updateGrid();
   }
@@ -136,14 +150,14 @@ export class GenericGridComponent implements OnInit {
     this.gridSettings = this.settings;
     this.gridButtons = this.commandButtons.filter(btn => btn.gridCommandButton === true);
     this.state = {
-      skip: this.gridSettings.state ? this.gridSettings.state.skip : null,
-      take: this.gridSettings.state ? this.gridSettings.state.take : null,
+      skip: this.gridSettings.state ? this.gridSettings.state.skip : undefined,
+      take: this.gridSettings.state ? this.gridSettings.state.take : undefined,
       filter: this.gridSettings.state && this.gridSettings.state.filterGroup
         ? ObjectHelper.getCompositeFilter(this.gridSettings.state.filterGroup, this.filterValueSourceItem)
-        : null,
+        : undefined,
       group: this.settings.state && this.settings.state.group
         ? ObjectHelper.getGroupDescriptors(this.settings.state.group)
-        : null,
+        : undefined,
       aggregates: this.gridSettings.aggregates
     }
 
@@ -151,7 +165,7 @@ export class GenericGridComponent implements OnInit {
   }
 
   updateGrid(): void {
-    this._gridService.fetch(this.state, this.gridSettings.requestDetails).subscribe(r => {
+    this._gridService.fetch(this.state || {}, this.gridSettings?.requestDetails || {}).subscribe(r => {
       this.items = r;
       this.aggregateResult = r.aggregateResult;
       //console.log("All Results: " + JSON.stringify(this.items));
@@ -162,14 +176,14 @@ export class GenericGridComponent implements OnInit {
     this.doPost({
       entity: item,
       viewType: ViewTypeEnum.Grid,
-      commandButtonRequest: { newSelection: button.shortString, cancel: button.cancel }
+      commandButtonRequest: { newSelection: button.shortString, cancel: button.cancel || false }
     });
   }
 
   formCommandClick(button: ICommandButton) {
     this._uiNotificationService.navigateNext({
       viewType: ViewTypeEnum.Grid,
-      commandButtonRequest: { newSelection: button.shortString, cancel: button.cancel }
+      commandButtonRequest: { newSelection: button.shortString, cancel: button.cancel || false }
     });
   }
 

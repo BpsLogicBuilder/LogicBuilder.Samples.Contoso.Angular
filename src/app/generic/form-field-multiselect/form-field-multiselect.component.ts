@@ -18,9 +18,9 @@ import { GenericService } from '../../http/generic.service';
 })
 export class FormFieldMultiselectComponent implements OnInit, ControlValueAccessor {
 
-  @Input() public multiSelectTemplate?: IMultiSelectTemplate;
-  @Input() public textField?: string;
-  @Input() public valueField?: string;
+  @Input() public multiSelectTemplate!: IMultiSelectTemplate;
+  @Input() public textField!: string;
+  @Input() public valueField!: string;
   @Input() public filterValueSourceItem?: any;
 
   constructor(private _genericService: GenericService) {
@@ -62,7 +62,7 @@ export class FormFieldMultiselectComponent implements OnInit, ControlValueAccess
     return this.selectedItems;
   }
 
-  public onValueChange(value) {
+  public onValueChange(value : any) {
     console.log("valueChange : ", value);
   }
 

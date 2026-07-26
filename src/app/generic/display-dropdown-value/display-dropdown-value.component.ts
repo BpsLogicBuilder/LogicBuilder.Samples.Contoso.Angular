@@ -12,14 +12,14 @@ import { ISelectorFlowResponse } from '../../stuctures/i-selector-flow-response'
 })
 export class DisplayDropdownValueComponent implements OnInit {
 
-  @Input() public valueTextTemplate: IDetailDropDownTemplate;
+  @Input() public valueTextTemplate?: IDetailDropDownTemplate;
   @Input() public filterValueSourceItem?: any;
   @Input() public selectedValue: any;
   @Input() public modelType?: any;
 
   constructor(private _genericService: GenericService, private _settingsService: SettingsService) { }
 
-  public selectedText: string;
+  public selectedText?: string;
   public data: any;
 
   ngOnInit() {
@@ -28,9 +28,9 @@ export class DisplayDropdownValueComponent implements OnInit {
 
   getDropDownData(): any
   {
-    if (!(this.filterValueSourceItem && this.valueTextTemplate.reloadItemsFlowName))
+    if (!(this.filterValueSourceItem && this.valueTextTemplate?.reloadItemsFlowName))
     {
-      this.getList(this.valueTextTemplate.textAndValueSelector);
+      this.getList(this.valueTextTemplate?.textAndValueSelector);
       return;
     }
 
@@ -43,13 +43,14 @@ export class DisplayDropdownValueComponent implements OnInit {
   }
 
   getList(selector: any) : void{
-    this._genericService.getList(this.valueTextTemplate.requestDetails, selector).subscribe(r =>
+    this._genericService.getList(this.valueTextTemplate?.requestDetails || {}, selector).subscribe(r =>
       {
         this.data = r;
-        if(this.data && this.data.length)
+        if(this.data && this.data.length && this.valueTextTemplate)
         {
-          let selected = this.data.find(i => i[this.valueTextTemplate.valueField] == this.selectedValue);
-          this.selectedText = selected ? selected[this.valueTextTemplate.textField] : "";
+          const valueTextTemplate = this.valueTextTemplate;
+          let selected = this.data.find((i: Record<string, any>) => i[valueTextTemplate.valueField] == this.selectedValue);
+          this.selectedText = selected ? selected[valueTextTemplate.textField] : "";
         }
         console.log("this.filterCellTemplate Returned:   " + JSON.stringify(this.data));
       });

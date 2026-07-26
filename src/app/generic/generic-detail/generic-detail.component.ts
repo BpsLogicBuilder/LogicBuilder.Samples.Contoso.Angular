@@ -14,26 +14,26 @@ import { IDetailRequest } from '../../stuctures/screens/requests/i-requests-base
     standalone: false
 })
 export class GenericDetailComponent implements OnInit {
-  @ViewChild('currencyTemplate', { static: true }) currencyTemplate: TemplateRef<any>;
-  @ViewChild('textTemplate', { static: true }) textTemplate: TemplateRef<any>;
-  @ViewChild('valueTextTemplate', { static: true }) valueTextTemplate: TemplateRef<any>;
-  @ViewChild('booleanTemplate', { static: true }) booleanTemplate: TemplateRef<any>;
-  @ViewChild('dateTemplate', { static: true }) dateTemplate: TemplateRef<any>;
-  @ViewChild('listTemplate', { static: true }) listTemplate: TemplateRef<any>;
-  @ViewChild('groupTemplate', { static: true }) groupTemplate: TemplateRef<any>;
+  @ViewChild('currencyTemplate', { static: true }) currencyTemplate!: TemplateRef<any>;
+  @ViewChild('textTemplate', { static: true }) textTemplate!: TemplateRef<any>;
+  @ViewChild('valueTextTemplate', { static: true }) valueTextTemplate!: TemplateRef<any>;
+  @ViewChild('booleanTemplate', { static: true }) booleanTemplate!: TemplateRef<any>;
+  @ViewChild('dateTemplate', { static: true }) dateTemplate!: TemplateRef<any>;
+  @ViewChild('listTemplate', { static: true }) listTemplate!: TemplateRef<any>;
+  @ViewChild('groupTemplate', { static: true }) groupTemplate!: TemplateRef<any>;
 
-  @Input() settings: IDetailFormSettings;
-  @Input() public commandButtons: ICommandButton[];
+  @Input() settings!: IDetailFormSettings;
+  @Input() public commandButtons!: ICommandButton[];
 
   constructor(private _genericService: GenericService,
     private _uiNotificationService: UiNotificationService) { }
 
   public detailType = detailKind;
-  public entity: EntityType;
-  public errorMessage: string;
-  public formSettings: IDetailFormSettings;
+  public entity?: EntityType;
+  public errorMessage?: string;
+  public formSettings?: IDetailFormSettings;
 
-  public getTemplate(templateName: string) {
+  public getTemplate(templateName: 'currencyTemplate' | 'textTemplate' | 'valueTextTemplate' | 'booleanTemplate' | 'dateTemplate' | 'listTemplate' | 'groupTemplate') {
     return this[templateName];
   }
 
@@ -64,7 +64,7 @@ export class GenericDetailComponent implements OnInit {
   }
 
   getItem() {
-    this._genericService.getItem(this.formSettings.requestDetails).subscribe(
+    this._genericService.getItem(this.formSettings?.requestDetails || {}).subscribe(
       itm => {
         this.entity = itm;
       },
@@ -75,14 +75,14 @@ export class GenericDetailComponent implements OnInit {
     this.doPost({
       entity: this.entity,
       viewType: ViewTypeEnum.Detail,
-      commandButtonRequest: { newSelection: button.shortString, cancel: button.cancel }
+      commandButtonRequest: { newSelection: button.shortString, cancel: button.cancel || false }
     });
   }
 
   navigateNext(button: ICommandButton) {
     this._uiNotificationService.navigateNext({
       viewType: ViewTypeEnum.Detail,
-      commandButtonRequest: { newSelection: button.shortString, cancel: button.cancel }
+      commandButtonRequest: { newSelection: button.shortString, cancel: button.cancel || false }
     });
   }
 
