@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { provideAnimations } from '@angular/platform-browser/animations';
-import { NgModule } from '@angular/core';
+import { NgModule, inject, provideAppInitializer } from '@angular/core';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -25,7 +25,7 @@ import { ScreenHostComponent } from './screen-host/screen-host.component';
 import { HtmlPageComponent } from './html-page/html-page.component';
 import { DisplayDropdownValueComponent } from './generic/display-dropdown-value/display-dropdown-value.component';
 import { GenericListComponent } from './generic/generic-list/generic-list.component';
-
+import { EnvironmentConfigService } from './common/environment-config.service';
 
 
 @NgModule({ declarations: [
@@ -52,5 +52,11 @@ import { GenericListComponent } from './generic/generic-list/generic-list.compon
         DatePickerModule,
         GridModule,
         NgbModule,
-        ReactiveFormsModule], providers: [provideAnimations(), provideHttpClient(withInterceptorsFromDi())] })
+        ReactiveFormsModule], 
+    providers: [provideAnimations(), 
+        provideAppInitializer(() => {
+            const runtimeConfig: EnvironmentConfigService = inject(EnvironmentConfigService);
+            return runtimeConfig.load()
+        }),
+        provideHttpClient(withInterceptorsFromDi())] })
 export class AppModule { }
