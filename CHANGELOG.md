@@ -1,3 +1,4 @@
+* 2026-07-27 - AB#175: Updating the README.md.
 * 2026-07-27 - AB#175: Fix failing tests.
 * 2026-07-27 - AB#175: Create .env files for prod, staging and development.
 * 2026-07-26 - AB#175: Migrate to modern CSS style animations.

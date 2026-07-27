@@ -1,27 +1,143 @@
-# Contoso
+# Contoso - BPS Logic Builder Angular Sample
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.1.0.
+This project demonstrates how Angular can be used to create a dynamic, data-driven application where screens and workflows are defined using **BPS Logic Builder** rather than hardcoded in the Angular application. The application dynamically generates UI components, forms, grids, and navigation based on configuration received from backend APIs.
 
-## Development server
+## Overview
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+Instead of building separate Angular components for each CRUD operation or screen, this application uses a set of **generic, reusable components** that render themselves based on metadata and settings provided by the BPS Logic Builder workflow engine. This approach enables business logic and screen definitions to be managed outside the Angular codebase, allowing for rapid changes without redeploying the frontend.
 
-## Code scaffolding
+## Architecture
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+### Core Services
 
-## Build
+The application communicates with three separate API endpoints (configured in `UrlsService`):
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+1. **Workflow API** (`WORKFLOW_URL`) - Managed by `SettingsService`
+   - Controls application flow and navigation
+   - Returns `IFlowSettings` with screen configuration, navigation bar, and flow state
+   - Endpoints: `/api/flow/Start`, `/api/flow/NavStart`, `/api/flow/Next`, `/api/flow/GetSelector`
 
-## Running unit tests
+2. **CRUD API** (`CRUD_URL`) - Managed by `GenericService`
+   - Handles Create, Read, Update, Delete operations for entities
+   - Provides data for forms and detail views
+   - Endpoints include: Get Item, Get List, Insert Item, Update Item, Delete Item
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+3. **Grid API** (`GRID_URL`) - Managed by `GridService`
+   - Provides data for Kendo UI grids with filtering, sorting, and pagination
+   - Returns data in format compatible with Kendo DataSource
+   - Supports OData-style queries via `toDataSourceRequest`
 
-## Running end-to-end tests
+### Generic Components
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+The application includes reusable generic components that adapt to different data types and configurations:
 
-## Further help
+- **GenericCreateComponent** - Dynamically generates create forms
+- **GenericEditComponent** - Dynamically generates edit forms
+- **GenericDetailComponent** - Displays entity details in read-only mode
+- **GenericDeleteComponent** - Handles entity deletion with confirmation
+- **GenericGridComponent** - Renders sortable, filterable data grids using Kendo UI Grid
+- **GenericListComponent** - Displays list views of entities
+- **FormFieldDropdownComponent** / **FormFieldMultiselectComponent** - Dynamic form controls
+- **GridColumnDropdownFilterComponent** / **GridColumnMultiselectFilterComponent** - Dynamic grid filters
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+### Flow Management
+
+The `IFlowState` interface tracks the user's journey through the application:
+- Current driver and selection
+- Module stack for nested workflows
+- Module begin/end tracking
+
+The `ScreenHostComponent` subscribes to screen settings changes and dynamically renders the appropriate generic component based on the `ViewType` returned from the workflow API.
+
+## Technology Stack
+
+- **Angular** (version 21.x)
+- **Kendo UI for Angular** - Grid, dropdowns, date pickers, and other UI components
+- **Bootstrap 5** & **Font Awesome** - Styling and icons
+- **RxJS** - Reactive programming for HTTP operations
+- **TypeScript** - Type-safe development
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js and npm installed
+- Backend APIs running for Workflow, CRUD, and Grid endpoints
+
+### Configuration
+
+Configure the backend API endpoints in `src/assets/env.json`:
+
+```json
+{
+  "ENVIRONMENT_NAME": "Development",
+  "CRUD_URL": "http://localhost:5000",
+  "GRID_URL": "http://localhost:5001",
+  "WORKFLOW_URL": "http://localhost:5002"
+}
+```
+
+### Development Server
+
+Run the development server:
+
+```bash
+npm start
+```
+
+Navigate to `http://localhost:4203/`. The app will automatically reload when you change source files.
+
+### Build
+
+Build the project for production:
+
+```bash
+npm run build
+```
+
+The build artifacts will be stored in the `dist/` directory.
+
+### Running Tests
+
+Execute unit tests via Karma:
+
+```bash
+npm test
+```
+
+Execute end-to-end tests via Protractor:
+
+```bash
+npm run e2e
+```
+
+## Key Features
+
+- **Dynamic Screen Generation** - Screens are defined in BPS Logic Builder and rendered dynamically
+- **Generic Components** - Reusable components adapt to different entity types and configurations
+- **Workflow-Driven Navigation** - Navigation and flow controlled by backend workflow engine
+- **Separation of Concerns** - Business logic and screen definitions managed separately from UI code
+- **Type-Safe Development** - TypeScript interfaces for all data structures and API responses
+- **Responsive UI** - Bootstrap-based responsive design with Kendo UI components
+
+## Project Structure
+
+```
+src/app/
+├── common/          # Shared services (date, validation, notifications, etc.)
+├── generic/         # Generic reusable components for dynamic rendering
+├── http/            # API services (SettingsService, GenericService, GridService)
+├── nav-bar/         # Navigation bar component
+├── screen-host/     # Host component that renders appropriate generic component
+├── stuctures/       # TypeScript interfaces and data models
+│   ├── screens/     # Screen-related interfaces
+│   └── requests/    # Request DTOs
+└── environments/    # Environment configurations
+```
+
+## Further Help
+
+For more information on:
+- **Angular CLI**: Run `ng help` or visit the [Angular CLI documentation](https://github.com/angular/angular-cli)
+- **BPS Logic Builder**: Consult the BPS Logic Builder documentation for creating and managing workflows
+- **Kendo UI**: Visit [Telerik Kendo UI for Angular documentation](https://www.telerik.com/kendo-angular-ui/components/)
