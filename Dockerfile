@@ -11,6 +11,8 @@ RUN --mount=type=secret,id=kendo_license,env=TELERIK_LICENSE \
 
 # Production stage
 FROM nginx:alpine
+# nonroot user fails to execute RUN chmod +x /entrypoint.sh
+
 COPY --from=builder /app/dist/contoso/browser /usr/share/nginx/html
 
 COPY env.template.json /usr/share/nginx/html/assets/env.template.json
