@@ -52,7 +52,7 @@ jobs:
         TELERIK_LICENSE: ${{ secrets.TELERIK_LICENSE }}
       run: |
         echo "ACR LOGIN SERVER NAME ${{ env.ACR_LOGIN_SERVER_NAME }}"
-        docker buildx build --secret id=kendo_license,env=${{ env.TELERIK_LICENSE }} -t "${env.ACR_LOGIN_SERVER_NAME}/${imageName}:${env.IMAGE_NAME}" -t "${env.ACR_LOGIN_SERVER_NAME}/${env.IMAGE_NAME}:latest" --push .
+        docker buildx build --secret id=kendo_license,env=${{ env.TELERIK_LICENSE }} -t "${env.ACR_LOGIN_SERVER_NAME}/${env.IMAGE_NAME}:${env.IMAGE_TAG}" -t "${env.ACR_LOGIN_SERVER_NAME}/${env.IMAGE_NAME}:latest" --push .
 
     - name: Update Container App image source
       uses: azure/arm-deploy@65ae74fb7aec7c680c88ef456811f353adae4d06
