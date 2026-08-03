@@ -1,0 +1,78 @@
+name: CD
+
+on:
+  push:
+    branches: [ master ]
+
+env:
+  DOTNET_VERSION: "10.0.x"
+  NODE_VERSION: "22.x"
+
+jobs:
+
+  deploy-container-app:
+    name: Deploy Workfow App
+    runs-on: ubuntu-latest
+    if: github.repository_owner == 'BpsLogicBuilder'
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+
+    - name: Checkout repository
+      uses: actions/checkout@v6
+
+    - uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5
+      with:
+        client-id: ${{ secrets.ARM_DEPLOYER_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+    - name: Get Existing ACR Name
+      id: get-acr-name
+      env:
+        RESOURCE_GROUP: ${{ secrets.AZURE_RG_CONTOSO }}
+      run: |
+          ACR_NAME=$(az acr list --resource-group "${{ env.RESOURCE_GROUP }}" --query "[0].name" -o tsv)
+          echo "registry_name=$ACR_NAME >> $GITHUB_OUTPUT
+
+    - name: Get ACR access token
+      id: get-acr-token
+      env:
+        RESOURCE_GROUP: ${{ secrets.AZURE_RG_CONTOSO }}
+        ACR_REGISTRY_NAME: ${{ steps.get-acr-name.outputs.registry_name}}
+      run: |
+          ACR_TOKEN=$(az acr login --name ${{ env.ACR_REGISTRY_NAME }} --expose-token --output tsv --query accessToken)
+          echo "::add-mask::$ACR_TOKEN" # mask the token in workflow logs
+          echo "token=$ACR_TOKEN" >> "$GITHUB_OUTPUT
+
+    - name: Log in to Azure Container Registry
+      uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f
+      env:
+        ACR_REGISTRY_NAME: ${{ steps.get-acr-name.outputs.registry_name}}
+      with:
+        registry: ${{ env.ACR_REGISTRY_NAME }}.azurecr.io
+        username: 00000000-0000-0000-0000-000000000000
+        password: ${{ steps.get-acr-token.outputs.token }}
+
+    - name: Build and Upload Image
+      env:
+        IMAGE_TAG: "v1.0.${{ github.run_number }}"
+        IMAGE_NAME: "contosoangular"
+        ACR_LOGIN_SERVER_NAME: ${{ steps.get-acr-name.outputs.registry_name}}.azurecr.io
+        TELERIK_LICENSE: ${{ secrets.TELERIK_LICENSE }}
+      run: |
+        echo "ACR LOGIN SERVER NAME ${{ env.ACR_LOGIN_SERVER_NAME }}"
+        docker buildx build --secret id=kendo_license,env=${{ env.TELERIK_LICENSE }} -t "${env.ACR_LOGIN_SERVER_NAME}/${imageName}:${env.IMAGE_NAME}" -t "${env.ACR_LOGIN_SERVER_NAME}/${env.IMAGE_NAME}:latest" --push .
+
+    - name: Update Container App image source
+      uses: azure/arm-deploy@65ae74fb7aec7c680c88ef456811f353adae4d06
+      env:
+        IMAGE_TAG: "v1.0.${{ github.run_number }}"
+        RESOURCE_GROUP: ${{ secrets.AZURE_RG_CONTOSO }}
+      with:
+        subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
+        resourceGroupName: ${{ env.RESOURCE_GROUP}}
+        parameters: imageTag=${{ env.IMAGE_TAG }}
+        template: ./infrastructure/contosoangular.bicep
+        failOnStdErr: false
