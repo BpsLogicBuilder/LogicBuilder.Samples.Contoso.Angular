@@ -1,3 +1,4 @@
+* 2026-08-03 - AB#176: Fix further substitution error in YAML.
 * 2026-08-03 - AB#176: Fix substitution error in YAML.
 * 2026-08-03 - AB#176: Fix ACR Login again.
 * 2026-08-03 - AB#176: Fix ACR Login.
