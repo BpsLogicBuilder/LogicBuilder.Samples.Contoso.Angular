@@ -1,3 +1,4 @@
+* 2026-08-03 - AB#176: Fix ACR Login.
 * 2026-08-03 - AB#176: Fix error in YAML.
 * 2026-08-03 - AB#176: Add YAML for deployment workflow.
 * 2026-08-01 - AB#176: Bicep file for image deployment.
