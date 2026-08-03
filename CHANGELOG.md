@@ -1,3 +1,5 @@
+* 2026-08-03 - AB#176: Add YAML for deployment workflow.
+* 2026-08-01 - AB#176: Bicep file for image deployment.
 * 2026-07-27 - AB#175: Updating the README.md.
 * 2026-07-27 - AB#175: Fix failing tests.
 * 2026-07-27 - AB#175: Create .env files for prod, staging and development.

@@ -1,0 +1,13 @@
+$rg = "rg-test"
+$acrName="<Get ACR Name from the portal>"
+$imageTag="v1.0.0"
+$imageName="contosoangular"
+
+# Login to ACR
+docker login "${acrName}.azurecr.io"
+
+# Build and push the image to ACR
+docker buildx build --secret id=kendo_license,src=$env:APPDATA\Telerik\telerik-license.txt -t "${acrName}.azurecr.io/${imageName}:${imageTag}" -t "${acrName}.azurecr.io/${imageName}:latest" --push .
+
+
+az deployment group create --resource-group $rg --template-file infrastructure/contosoangular.bicep --parameters imageTag="$imageTag"
