@@ -1,0 +1,79 @@
+on: [workflow_dispatch]
+name: Deploy Services to AKS
+
+env:
+  DOTNET_VERSION: "10.0.x"
+  NODE_VERSION: "22.x"
+
+jobs:
+
+  deploy-container-app:
+    name: Deploy Angular App
+    runs-on: ubuntu-latest
+    if: github.repository_owner == 'BpsLogicBuilder'
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+
+    - name: Checkout repository
+      uses: actions/checkout@v6
+
+    - uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5
+      with:
+        client-id: ${{ secrets.ARM_DEPLOYER_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+    - name: Get Deployment Outputs
+      id: get_deployment_outpots
+      env:
+        RESOURCE_GROUP: ${{ secrets.AZURE_RG_CONTOSO_AKS }}
+      run: |
+        ACR_NAME=$(az deployment group show --resource-group ${{ env.RESOURCE_GROUP }} --name main --query properties.outputs.acrName.value -o tsv)
+        echo "::add-mask::$ACR_NAME"
+
+        AKS_CLUSTER_NAME=$(az deployment group show --resource-group ${{ env.RESOURCE_GROUP }} --name main --query properties.outputs.aksClusterName.value -o tsv)
+        echo "::add-mask::$AKS_CLUSTER_NAME"
+
+        CONTOSO_APP_NAMESPACE=$(az deployment group show --resource-group ${{ env.RESOURCE_GROUP }} --name main --query properties.outputs.kubernetesNamespace.value -o tsv)
+        echo "::add-mask::$CONTOSO_APP_NAMESPACE"
+
+        echo "acr_name=$ACR_NAME" >> $GITHUB_OUTPUT
+        echo "aks_cluster_name=$AKS_CLUSTER_NAME" >> $GITHUB_OUTPUT
+        echo "contoso_app_namespace=$CONTOSO_APP_NAMESPACE" >> $GITHUB_OUTPUT
+        
+    - name: Log in to Azure Container Registry
+      env:
+        RESOURCE_GROUP: ${{ secrets.AZURE_RG_CONTOSO_AKS }}
+        ACR_NAME: ${{ steps.get_deployment_outpots.outputs.acr_name }}
+      run: |
+          az acr login --name ${{ env.ACR_NAME }}
+
+    - name: Build and Upload Image
+      env:
+        IMAGE_TAG: "v1.0.${{ github.run_number }}"
+        IMAGE_NAME: "contosoangular"
+        ACR_LOGIN_SERVER_NAME: ${{ steps.get_deployment_outpots.outputs.acr_name }}.azurecr.io
+        TELERIK_LICENSE: ${{ secrets.TELERIK_LICENSE }}
+      run: |
+        echo "ACR LOGIN SERVER NAME ${{ env.ACR_LOGIN_SERVER_NAME }}"
+        docker buildx build --secret id=kendo_license,env=TELERIK_LICENSE -t "${{env.ACR_LOGIN_SERVER_NAME}}/${{env.IMAGE_NAME}}:${{env.IMAGE_TAG}}" -t "${{env.ACR_LOGIN_SERVER_NAME}}/${{env.IMAGE_NAME}}:latest" --push .
+
+    - name: Get AKS Credentials
+      env:
+        RESOURCE_GROUP: ${{ secrets.AZURE_RG_CONTOSO_AKS }}
+        AKS_CLUSTER_NAME: ${{ steps.get_deployment_outpots.outputs.aks_cluster_name }}
+      run: |
+        az aks get-credentials --resource-group ${{ env.RESOURCE_GROUP }} --name ${{ env.AKS_CLUSTER_NAME }}
+
+    - name: Deploy Manifext
+      env:
+        ACR_NAME: ${{ steps.get_deployment_outpots.outputs.acr_name }}
+        IMAGE_TAG: "v1.0.${{ github.run_number }}"
+        CONTOSO_APP_NAMESPACE: ${{ steps.get_deployment_outpots.outputs.contoso_app_namespace }}
+        EXPECTED_CERTIFICATE_THUMBPRINT: ${{ steps.get_deployment_outpots.outputs.expected_certificate_thumbprint }}
+      run: |
+        sed -e "s|ACR_NAME|${{ env.ACR_NAME }}|g" \
+        -e "s|IMAGE_TAG|${{ env.IMAGE_TAG }}|g" \
+        infrastructure/aks/bsl-deployment.yaml | kubectl apply -f - -n ${{ env.CONTOSO_APP_NAMESPACE }}
