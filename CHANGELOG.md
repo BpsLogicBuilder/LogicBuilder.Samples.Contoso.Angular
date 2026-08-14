@@ -1,3 +1,4 @@
+* 2026-08-14 - AB#177: Add load balancer ip to deployment test replacements.
 * 2026-08-14 - AB#177: Fix deployment file name.
 * 2026-08-14 - AB#177: Add AKS deployment workflow.
 * 2026-08-03 - AB#176: Fix docker buildx command to use "env=" appropriately.
