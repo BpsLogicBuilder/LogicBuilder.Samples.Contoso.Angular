@@ -76,4 +76,4 @@ jobs:
       run: |
         sed -e "s|ACR_NAME|${{ env.ACR_NAME }}|g" \
         -e "s|IMAGE_TAG|${{ env.IMAGE_TAG }}|g" \
-        infrastructure/aks/bsl-deployment.yaml | kubectl apply -f - -n ${{ env.CONTOSO_APP_NAMESPACE }}
+        infrastructure/aks/deployment.yaml | kubectl apply -f - -n ${{ env.CONTOSO_APP_NAMESPACE }}
