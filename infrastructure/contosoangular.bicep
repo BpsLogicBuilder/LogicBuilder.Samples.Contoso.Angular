@@ -47,6 +47,7 @@ param imageTag string = 'v1.0.0'
 
 var uniqueSubString = uniqueString(resourceGroup().id)
 var acrName = '${prefix}acr${uniqueSubString}'
+var appConfigurationName = '${prefix}-config-${uniqueSubString}'
 var containerAppEnvName = '${prefix}-cae-${uniqueSubString}'
 
 resource containerAppEnv 'Microsoft.App/managedEnvironments@2022-06-01-preview' existing = {
@@ -55,6 +56,10 @@ resource containerAppEnv 'Microsoft.App/managedEnvironments@2022-06-01-preview' 
 
 resource acr 'Microsoft.ContainerRegistry/registries@2025-11-01' existing = {
   name: acrName
+}
+
+resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2024-05-01' existing = {
+  name: appConfigurationName
 }
 
 resource apiService 'Microsoft.App/containerApps@2026-01-01' existing = {
@@ -122,6 +127,10 @@ resource angularApp 'Microsoft.App/containerApps@2026-01-01' = {
             {
               name: 'ENVIRONMENT_NAME'
               value: 'dev'
+            }
+            {
+              name: 'APPLICATION_CONFIGURATION_ENDPOINT'
+              value: appConfiguration.properties.endpoint
             }
           ]
         }

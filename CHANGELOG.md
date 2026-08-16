@@ -1,3 +1,4 @@
+* 2026-08-16 - AB#208: Add App Configuration to deployment.
 * 2026-08-14 - AB#177: Add load balancer ip to deployment test replacements.
 * 2026-08-14 - AB#177: Fix deployment file name.
 * 2026-08-14 - AB#177: Add AKS deployment workflow.
