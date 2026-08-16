@@ -4,7 +4,8 @@ $imageTag="v1.0.0"
 $imageName="contosoangular"
 
 # Login to ACR
-docker login "${acrName}.azurecr.io"
+# docker login "${acrName}.azurecr.io"
+az acr login -n ${acrName}
 
 # Build and push the image to ACR
 docker buildx build --secret id=kendo_license,src=$env:APPDATA\Telerik\telerik-license.txt -t "${acrName}.azurecr.io/${imageName}:${imageTag}" -t "${acrName}.azurecr.io/${imageName}:latest" --push .
