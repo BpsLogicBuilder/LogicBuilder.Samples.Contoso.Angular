@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: contoso-angular
-  namespace: contoso-apps
+  namespace: CONTOSO_APP_NAMESPACE
   labels:
     app: contoso-angular
 spec:
@@ -16,18 +16,21 @@ spec:
         app: contoso-angular
     spec:
       automountServiceAccountToken: false
+      serviceAccountName: CONTOSO_ANGULAR_SERVICEACCOUNT_NAME
       containers:
       - name: contoso-angular
         image: ACR_NAME.azurecr.io/contosoangular:IMAGE_TAG
         ports:
         - containerPort: 80
         env:
+        - name: APPLICATION_CONFIGURATION_ENDPOINT
+          value: "APP_CONFIG_ENDPOINT"
         - name: WORKFLOW_URL
-          value: "http://contoso-spa-api.LOAD_BALANCER_IP.nip.io" # NOSONAR DEV Only
+          value: "http://contoso-spa-api.LOAD_BALANCER_IP.nip.io" # NOSONAR - DEV Only
         - name: CRUD_URL
-          value: "http://contoso-api.LOAD_BALANCER_IP.nip.io" # NOSONAR DEV Only
+          value: "http://contoso-api.LOAD_BALANCER_IP.nip.io" # NOSONAR - DEV Only
         - name: GRID_URL
-          value: "http://contoso-kendo-grid-api.LOAD_BALANCER_IP.nip.io" # NOSONAR DEV Only
+          value: "http://contoso-kendo-grid-api.LOAD_BALANCER_IP.nip.io" # NOSONAR - DEV Only
         resources:
           requests:
             memory: "256Mi"
