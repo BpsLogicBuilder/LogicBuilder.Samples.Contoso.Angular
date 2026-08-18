@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef, ViewChild, Input } from '@angular/core';
+import { Component, TemplateRef, ViewChild, Input } from '@angular/core';
 import { UiNotificationService } from '../common/ui-notification.service';
 import { ICommandButton } from '../stuctures/i-command-button';
 import { IHtmlPageSettings, IContentTemplate, IMessageTemplate } from '../stuctures/screens/html/i-html-page-settings';
@@ -10,14 +10,14 @@ import { ViewTypeEnum } from '../stuctures/screens/i-view-type';
     styleUrls: ['./html-page.component.css'],
     standalone: false
 })
-export class HtmlPageComponent implements OnInit {
+export class HtmlPageComponent {
   @ViewChild('welcomeTemplate', { static: true }) welcomeTemplate!: TemplateRef<any>;
   @ViewChild('messageTemplate', { static: true }) messageTemplate!: TemplateRef<any>;
 
   @Input() public settings!: IHtmlPageSettings;
   @Input() public commandButtons!: ICommandButton[];
 
-  constructor(private _uiNotificationService: UiNotificationService) { }
+  constructor(private readonly _uiNotificationService: UiNotificationService) { }
 
   public getTemplate(templateName: 'welcomeTemplate' | 'messageTemplate') {
     return this[templateName];
@@ -33,9 +33,6 @@ export class HtmlPageComponent implements OnInit {
     return {
       $implicit: messageTemplate
     }
-  }
-
-  ngOnInit() {
   }
 
   navigateNext(button: ICommandButton) {

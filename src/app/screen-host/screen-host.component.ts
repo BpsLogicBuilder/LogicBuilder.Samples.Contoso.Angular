@@ -11,14 +11,13 @@ import { ViewTypeEnum } from '../stuctures/screens/i-view-type';
 })
 export class ScreenHostComponent implements OnInit {
 
-  constructor(private _notificationService: UiNotificationService) { 
+  constructor(private readonly _notificationService: UiNotificationService) { 
     _notificationService.screenSettings.subscribe(screen => {
-      if (!(screen.validationResults && screen.validationResults.length))
+      if (!(screen.validationResults?.length))
       {
         this.screenSettings = null;
-        let screenHost = this;
-        setTimeout(function () {
-          screenHost.screenSettings = screen;
+        setTimeout(() => {
+          this.screenSettings = screen;
         }, 10);
       }
       else

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { UiNotificationService } from '../common/ui-notification.service';
 import { INavigationBar } from '../stuctures/i-navigation-bar';
 
@@ -8,9 +8,9 @@ import { INavigationBar } from '../stuctures/i-navigation-bar';
     styleUrls: ['./nav-bar.component.css'],
     standalone: false
 })
-export class NavBarComponent implements OnInit {
+export class NavBarComponent {
 
-  constructor(private _notificationService: UiNotificationService) {
+  constructor(private readonly _notificationService: UiNotificationService) {
     _notificationService.navBar.subscribe(nb => {
       this.navBar = nb;
     });
@@ -18,9 +18,6 @@ export class NavBarComponent implements OnInit {
 
   public navBar?: INavigationBar;
   public isCollapsed: boolean = false;
-
-  ngOnInit() {
-  }
 
   menuItemClick(stage: number, mod: string) {
     console.log("menuItemClick");

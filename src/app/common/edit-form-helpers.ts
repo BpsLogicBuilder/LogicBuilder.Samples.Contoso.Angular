@@ -22,7 +22,7 @@ export class EditFormHelpers
                 if (data)
                     return data;
             }
-            else if (setting.abstractControlType == abstractControlKind.formGroup && formGroup.controls[setting.field] && formGroupData.formGroupData && formGroupData.formGroupData[setting.field])
+            else if (setting.abstractControlType == abstractControlKind.formGroup && formGroup.controls[setting.field] && formGroupData.formGroupData?.[setting.field])
             {
                 if(formControl === formGroup.controls[setting.field])
                     return formGroupData.formGroupData[setting.field];
@@ -31,10 +31,10 @@ export class EditFormHelpers
                 if (data)
                     return data;
             }
-            else if (setting.abstractControlType == abstractControlKind.formGroupArray && formGroup.controls[setting.field] && formGroupData.formArrayData && formGroupData.formArrayData[setting.field])
+            else if (setting.abstractControlType == abstractControlKind.formGroupArray && formGroup.controls[setting.field] && formGroupData.formArrayData?.[setting.field])
             {
                 let formGroupArray: UntypedFormArray = <UntypedFormArray>formGroup.controls[setting.field];
-                if (formGroupArray.controls && formGroupArray.controls.length)
+                if (formGroupArray.controls?.length)
                 {
                     for (let i in formGroupArray.controls)
                     {
@@ -59,8 +59,10 @@ export class EditFormHelpers
                 || setting.abstractControlType === abstractControlKind.multiSelectFormControl)
                 && formGroup.controls[setting.field])
             {
+                continue;
             }
-            else if (setting.abstractControlType == abstractControlKind.groupBox)
+
+            if (setting.abstractControlType == abstractControlKind.groupBox)
             {
                 EditFormHelpers.buildFormGroupData(formGroup, <IFormItemSetting[]>(<IGroupBoxSettings>setting).fieldSettings, formGroupData);
             }
@@ -72,18 +74,20 @@ export class EditFormHelpers
             }
             else if (setting.abstractControlType == abstractControlKind.formGroupArray && formGroup.controls[setting.field])
             {
-                let formGroupArray: UntypedFormArray = <UntypedFormArray>formGroup.controls[setting.field];
-                formGroupData.formArrayData = {};
-                formGroupData.formArrayData[setting.field] = { formGroupDataArray: [] };
-                if (formGroupArray.controls && formGroupArray.controls.length)
-                {
-                    for (let i in formGroupArray.controls)
-                    {
-                        let fg:UntypedFormGroup = <UntypedFormGroup>formGroupArray.controls[i];
-                        formGroupData.formArrayData[setting.field].formGroupDataArray.push({ displayMessages: {} });
-                        EditFormHelpers.buildFormGroupData(fg,  <IFormItemSetting[]>(<IFormGroupArraySettings>setting).fieldSettings, formGroupData.formArrayData[setting.field].formGroupDataArray[i]);
-                    }
-                }
+                EditFormHelpers.buildFormGroupArrayData(formGroup, setting, formGroupData);
+            }
+        }
+    }
+
+    private static buildFormGroupArrayData(formGroup: UntypedFormGroup, setting: IFormItemSetting, formGroupData: IFormGroupData) {
+        let formGroupArray: UntypedFormArray = <UntypedFormArray>formGroup.controls[setting.field];
+        formGroupData.formArrayData = {};
+        formGroupData.formArrayData[setting.field] = { formGroupDataArray: [] };
+        if (formGroupArray.controls?.length) {
+            for (let i in formGroupArray.controls) {
+                let fg: UntypedFormGroup = <UntypedFormGroup>formGroupArray.controls[i];
+                formGroupData.formArrayData[setting.field].formGroupDataArray.push({ displayMessages: {} });
+                EditFormHelpers.buildFormGroupData(fg, <IFormItemSetting[]>(<IFormGroupArraySettings>setting).fieldSettings, formGroupData.formArrayData[setting.field].formGroupDataArray[i]);
             }
         }
     }
@@ -144,17 +148,7 @@ export class EditFormHelpers
                 || setting.abstractControlType === abstractControlKind.multiSelectFormControl) 
                 && formGroup.controls[setting.field])
             {
-                const c: AbstractControl = formGroup.controls[setting.field];
-                if (validationMessages[setting.field]) {
-                    formGroupData.displayMessages[setting.field] = '';
-                    if ((c.dirty || c.touched) && c.errors) {
-                        Object.keys(c.errors).map(messageKey => {
-                            if (validationMessages[setting.field][messageKey]) {
-                                formGroupData.displayMessages[setting.field] += validationMessages[setting.field][messageKey] + ' ';
-                            }
-                        });
-                    }
-                }
+                EditFormHelpers.processFormFieldValidationMessages(formGroup, setting, validationMessages, formGroupData);
             }
             else if (setting.abstractControlType == abstractControlKind.groupBox)
             {
@@ -169,19 +163,35 @@ export class EditFormHelpers
             else if (setting.abstractControlType == abstractControlKind.formGroupArray 
                 && formGroup.controls[setting.field])
             {
-                const formGroupArray: UntypedFormArray =  <UntypedFormArray>formGroup.controls[setting.field];
-                if (formGroupArray.controls && formGroupArray.controls.length)
-                {
-                    for (let i in formGroupArray.controls) {
-                        EditFormHelpers.processValidationMessages
-                        (
-                            <UntypedFormGroup>formGroupArray.controls[i], 
-                            <IFormItemSetting[]>(<IFormGroupArraySettings>setting).fieldSettings, 
-                            <IFormGroupData>formGroupData.formArrayData![setting.field].formGroupDataArray[i], 
-                            (<IFormGroupArraySettings>setting).validationMessages || {}
-                        );
-                     }
-                }
+                EditFormHelpers.processFormGroupArrayValidationMessages(formGroup, setting, formGroupData);
+            }
+        }
+    }
+
+    private static processFormFieldValidationMessages(formGroup: UntypedFormGroup, setting: IFormItemSetting, validationMessages: { [key: string]: { [key: string]: string; }; }, formGroupData: IFormGroupData) {
+        const c: AbstractControl = formGroup.controls[setting.field];
+        if (validationMessages[setting.field]) {
+            formGroupData.displayMessages[setting.field] = '';
+            if ((c.dirty || c.touched) && c.errors) {
+                Object.keys(c.errors).forEach(messageKey => {
+                    if (validationMessages[setting.field][messageKey]) {
+                        formGroupData.displayMessages[setting.field] += validationMessages[setting.field][messageKey] + ' ';
+                    }
+                });
+            }
+        }
+    }
+
+    private static processFormGroupArrayValidationMessages(formGroup: UntypedFormGroup, setting: IFormItemSetting, formGroupData: IFormGroupData) {
+        const formGroupArray: UntypedFormArray = <UntypedFormArray>formGroup.controls[setting.field];
+        if (formGroupArray.controls?.length) {
+            for (let i in formGroupArray.controls) {
+                EditFormHelpers.processValidationMessages(
+                    <UntypedFormGroup>formGroupArray.controls[i],
+                    <IFormItemSetting[]>(<IFormGroupArraySettings>setting).fieldSettings,
+                    <IFormGroupData>formGroupData.formArrayData![setting.field].formGroupDataArray[i],
+                    (<IFormGroupArraySettings>setting).validationMessages || {}
+                );
             }
         }
     }

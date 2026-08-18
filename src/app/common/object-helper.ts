@@ -5,7 +5,7 @@ import { IFilterDefinition } from "../stuctures/screens/i-filter-definition";
 import { IFormItemSetting, abstractControlKind, IFormGroupSettings, IGroupBoxSettings, IValidatorDescription, IFormGroupArraySettings, IFormControlSettings, IFormGroupData, IConditionGroup } from "../stuctures/screens/edit/i-edit-form-settings";
 import { EntityType } from "../stuctures/screens/i-base-model";
 import { DateService } from "./date.service";
-import { UntypedFormBuilder, UntypedFormGroup, UntypedFormControl, UntypedFormArray, AbstractControl } from "@angular/forms";
+import { UntypedFormBuilder, UntypedFormGroup, UntypedFormControl, UntypedFormArray } from "@angular/forms";
 import { ValidatorsManager } from "./validators-manager";
 import { ListManagerService } from "./list-manager.service";
 import { ISort } from "../stuctures/screens/i-sort";
@@ -24,7 +24,7 @@ export class ObjectHelper {
     }
 
     static getGroupDescriptor(group: IGroup): GroupDescriptor {
-        return Object.assign({}, group);
+        return {...group};
     }
 
     static getGroupDescriptors(groups: IGroup[]): GroupDescriptor[] {
@@ -32,7 +32,7 @@ export class ObjectHelper {
     }
 
     static getSortDescriptor(sort: ISort): SortDescriptor {
-        return Object.assign({}, sort);
+        return {...sort};
     }
 
     static getSortDescriptors(sorts: ISort[]): SortDescriptor[] {
@@ -52,7 +52,7 @@ export class ObjectHelper {
 
     static FilterRequiresValueSource(filterGroup: IFilterGroup): boolean {
         let requiresValueSource: boolean = false;
-        if (filterGroup.filters && filterGroup.filters.length) {
+        if (filterGroup.filters?.length) {
             filterGroup.filters.forEach(filter => {
                 if (filter.valueSourceMember)
                 {
@@ -63,7 +63,7 @@ export class ObjectHelper {
 
         if (requiresValueSource) return true;
 
-        if (filterGroup.filterGroups && filterGroup.filterGroups.length) {
+        if (filterGroup.filterGroups?.length) {
             filterGroup.filterGroups.forEach(fg => {
                 if (ObjectHelper.FilterRequiresValueSource(fg))
                     requiresValueSource = true;
@@ -75,7 +75,7 @@ export class ObjectHelper {
 
     static getCompositeFilter(filterGroup: IFilterGroup, valueSource?: any): CompositeFilterDescriptor {
         let compositeFilter: CompositeFilterDescriptor = { logic: filterGroup.logic, filters: [] };
-        if (filterGroup.filters && filterGroup.filters.length) {
+        if (filterGroup.filters?.length) {
             filterGroup.filters.forEach(filter => {
                 let filterDescriptor: FilterDescriptor = valueSource && filter.valueSourceMember
                     ? {
@@ -92,7 +92,7 @@ export class ObjectHelper {
             });
         }
 
-        if (filterGroup.filterGroups && filterGroup.filterGroups.length) {
+        if (filterGroup.filterGroups?.length) {
             filterGroup.filterGroups.forEach(fg => {
                 compositeFilter.filters.push(ObjectHelper.getCompositeFilter(fg, valueSource));
             });
@@ -103,7 +103,7 @@ export class ObjectHelper {
 
     static updateFilterValueFields(filterGroup: IFilterGroup, valueSource?: any): IFilterGroup {
         let convertedFilterGrroup: IFilterGroup = { logic: filterGroup.logic, filters: [] };
-        if (filterGroup.filters && filterGroup.filters.length) {
+        if (filterGroup.filters?.length) {
             filterGroup.filters.forEach(filter => {
                 let filterDescriptor: IFilterDefinition = valueSource && filter.valueSourceMember
                     ? {
@@ -120,7 +120,7 @@ export class ObjectHelper {
             });
         }
 
-        if (filterGroup.filterGroups && filterGroup.filterGroups.length) {
+        if (filterGroup.filterGroups?.length) {
             filterGroup.filterGroups.forEach(fg => {
                 convertedFilterGrroup.filterGroups!.push(ObjectHelper.updateFilterValueFields(fg, valueSource));
             });
@@ -149,7 +149,7 @@ export class ObjectHelper {
                 {
                     patchObject[field.field] = field.type == 'date'
                         ? dateService.convertToDate(item[field.field])
-                        : patchObject[field.field] = item[field.field];
+                        : item[field.field];
                 }
                 else if ((<IFormControlSettings>field).unchangedValidationSetting)
                 {
@@ -170,7 +170,7 @@ export class ObjectHelper {
             }
             else if (item && field.abstractControlType === abstractControlKind.formGroupArray)
             {
-                if (item[field.field] && item[field.field].length && formGroup.controls[field.field])
+                if (item[field.field]?.length && formGroup.controls[field.field])
                 {
                     patchObject[field.field] = [];
                     item[field.field].forEach((element: EntityType) =>
@@ -196,7 +196,7 @@ export class ObjectHelper {
 
     static getPatchObject(formGroup: UntypedFormGroup, fieldSettings: IFormItemSetting[], item: EntityType, dateService: DateService, fb: UntypedFormBuilder): any
     {
-        let patchObject = Object.assign({}, item || {});
+        let patchObject = {...item};
         ObjectHelper.updatePatchObject(patchObject, formGroup, fieldSettings, item, dateService, fb);
 
         return patchObject;
@@ -297,14 +297,14 @@ export class ObjectHelper {
         if (!validatorFunction) {
             return null;
         }
-        return validator.arguments && validator.arguments.length
+        return validator.arguments?.length
             ? validatorFunction.apply(validatorClass, ObjectHelper.getArgumentsArray(validator.arguments))
             : validatorFunction;
     }
 
     static getConditionsCompositeFilter(conditionGroup: IConditionGroup, valueSource?: any): CompositeFilterDescriptor {
         let compositeFilter: CompositeFilterDescriptor = { logic: conditionGroup.logic, filters: [] };
-        if (conditionGroup.conditions && conditionGroup.conditions.length) {
+        if (conditionGroup.conditions?.length) {
             conditionGroup.conditions.forEach(filter => {
                 let filterDescriptor: FilterDescriptor = valueSource && filter.rightVariable
                     ? {
@@ -321,7 +321,7 @@ export class ObjectHelper {
             });
         }
 
-        if (conditionGroup.conditionGroups && conditionGroup.conditionGroups.length) {
+        if (conditionGroup.conditionGroups?.length) {
             conditionGroup.conditionGroups.forEach(fg => {
                 compositeFilter.filters.push(ObjectHelper.getCompositeFilter(fg, valueSource));
             });
@@ -333,7 +333,7 @@ export class ObjectHelper {
     static getConditionsFieldsToWatch(conditionGroup: IConditionGroup, listManager: ListManagerService): string[] {
         let obj:any = {};
         let list: string[] = [];
-        if (conditionGroup.conditions && conditionGroup.conditions.length) {
+        if (conditionGroup.conditions?.length) {
             conditionGroup.conditions.forEach(filter => {
                 obj[filter.leftVariable.replace('.', '_')] = '';
                 if (filter.rightVariable)
@@ -346,7 +346,7 @@ export class ObjectHelper {
             list.push(key);
         });
 
-        if (conditionGroup.conditionGroups && conditionGroup.conditionGroups.length) {
+        if (conditionGroup.conditionGroups?.length) {
             conditionGroup.conditionGroups.forEach(cg => {
                 list = listManager.mergeStringArray(list, ObjectHelper.getConditionsFieldsToWatch(cg, listManager));
             });
