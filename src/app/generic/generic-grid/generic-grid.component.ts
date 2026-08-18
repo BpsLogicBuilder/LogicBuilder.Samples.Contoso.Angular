@@ -40,7 +40,7 @@ export class GenericGridComponent implements OnInit {
   @Input() public commandButtons!: ICommandButton[];
   @Input() public filterValueSourceItem?: any;
 
-  constructor(private _gridService: GridService, private _uiNotificationService: UiNotificationService) { }
+  constructor(private readonly _gridService: GridService, private readonly _uiNotificationService: UiNotificationService) { }
 
   public gridButtons?: ICommandButton[];
   public aggregates?: any[];
@@ -133,8 +133,8 @@ export class GenericGridComponent implements OnInit {
   }
 
   public dataStateChange(state: DataStateChangeEvent): void {
-    if (state && state.group) {
-      state.group.map(group => group.aggregates = this.gridSettings?.aggregates);
+    if (state?.group) {
+      state.group.forEach(group => group.aggregates = this.gridSettings?.aggregates);
     }
 
     this.state = state;
@@ -144,6 +144,7 @@ export class GenericGridComponent implements OnInit {
   }
 
   public filterChange(filter: CompositeFilterDescriptor): void {
+    console.log("Filter Changed: " + filter.logic);
   }
 
   ngOnInit() {
@@ -152,10 +153,10 @@ export class GenericGridComponent implements OnInit {
     this.state = {
       skip: this.gridSettings.state ? this.gridSettings.state.skip : undefined,
       take: this.gridSettings.state ? this.gridSettings.state.take : undefined,
-      filter: this.gridSettings.state && this.gridSettings.state.filterGroup
+      filter: this.gridSettings.state?.filterGroup
         ? ObjectHelper.getCompositeFilter(this.gridSettings.state.filterGroup, this.filterValueSourceItem)
         : undefined,
-      group: this.settings.state && this.settings.state.group
+      group: this.settings.state?.group
         ? ObjectHelper.getGroupDescriptors(this.settings.state.group)
         : undefined,
       aggregates: this.gridSettings.aggregates

@@ -1,6 +1,6 @@
 import { ObjectHelper } from "./object-helper";
 import { AbstractControl, UntypedFormControl, UntypedFormGroup, UntypedFormBuilder, UntypedFormArray } from "@angular/forms";
-import { IFormItemSetting, IValidatorDescription, IGroupBoxSettings, IFormGroupSettings, IFormGroupArraySettings, abstractControlKind, IFormGroupData, IGroupSettings, IDirectiveDescription, IDirective } from "../stuctures/screens/edit/i-edit-form-settings";
+import { IFormItemSetting, IValidatorDescription, IGroupBoxSettings, IFormGroupSettings, IFormGroupArraySettings, abstractControlKind, IGroupSettings, IDirectiveDescription, IDirective } from "../stuctures/screens/edit/i-edit-form-settings";
 import { EditFormHelpers } from "./edit-form-helpers";
 import { IHandleEditDirectiveArgs, IEditDirectiveFunctionArgs } from "../stuctures/screens/i-directive-function-args";
 
@@ -8,13 +8,11 @@ export class DirectivesManager
 {
     public static GetDirectiveClass(className: string)
     {
-        switch (className)
+        if (className === "Directives")
         {
-            case "Directives":
-                return Directives;
-            default:
-                return undefined;
+            return Directives;
         }
+        return undefined;
     }
 }
 
@@ -95,7 +93,7 @@ export class Directives
             else if (setting.abstractControlType == abstractControlKind.formGroupArray && formGroup.controls[setting.field])
             {
                 const formGroupArray: UntypedFormArray =  <UntypedFormArray>formGroup.controls[setting.field];
-                if (formGroupArray.controls && formGroupArray.controls.length)
+                if (formGroupArray.controls?.length)
                 {
                     formGroupArray.controls.forEach(control => {
                         let fg: UntypedFormGroup = <UntypedFormGroup>control;
@@ -109,7 +107,7 @@ export class Directives
 
     static getFormControlSetting(fieldSettings: IFormItemSetting[], fieldName: string): IFormItemSetting | null
     {
-        if (!(fieldSettings && fieldSettings.length))
+        if (!(fieldSettings?.length))
             return null;
 
         for (let field of fieldSettings)
@@ -134,11 +132,11 @@ export class Directives
     {
         let obj: any = {};
         obj[args.fieldBeingUpdated] = args.newValue;
-        let formObject = Object.assign({}, args.formGroup.value);
+        let formObject = {...args.formGroup.value};
 
         //need to update an object representing the item form with the new value before validating
         //because itemForm has not yet been updated at valueChanges.
-        let conditionEvaluation: boolean = ObjectHelper.evaluateCondition(Object.assign({}, formObject, obj), args.directive.conditionGroup);
+        let conditionEvaluation: boolean = ObjectHelper.evaluateCondition({...formObject, ...obj}, args.directive.conditionGroup);
 
         Directives.getDirectiveFunction({
             directive: args.directive,
@@ -262,7 +260,7 @@ export class Directives
 
     static hasValidator(control: UntypedFormControl, validator: string, questionSetting: IFormItemSetting): boolean
     {
-        if (!(questionSetting.validationSetting && questionSetting.validationSetting.validators && questionSetting.validationSetting.validators.length))
+        if (!(questionSetting.validationSetting?.validators?.length))
             return false;
 
         let validators: IValidatorDescription[] = questionSetting.validationSetting.validators.filter((v: IValidatorDescription) => v.functionName === validator);
@@ -283,7 +281,7 @@ export class Directives
 
     static getValidator(control: UntypedFormControl, validator: string, questionSetting: IFormItemSetting): IValidatorDescription | null
     {
-        if (!(questionSetting.unchangedValidationSetting && questionSetting.unchangedValidationSetting.validators && questionSetting.unchangedValidationSetting.validators.length))
+        if (!(questionSetting.unchangedValidationSetting?.validators?.length))
             return null;
 
         return questionSetting.unchangedValidationSetting.validators.find((v: IValidatorDescription) => v.functionName === validator);
@@ -354,7 +352,7 @@ export class Directives
         if (!directiveClass) {
             return null;
         }
-        var directiveFunction = directiveClass[directive.functionName];
+        let directiveFunction = directiveClass[directive.functionName];
         if (!directiveFunction)
             return null;
         

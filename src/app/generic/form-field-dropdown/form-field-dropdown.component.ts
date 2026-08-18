@@ -32,12 +32,11 @@ export class FormFieldDropdownComponent implements OnInit, ControlValueAccessor
     return this._reload || "";
   }
 
-  @Input('reload')
+  @Input()
   set reload(value: string)
   {
-    let set_reload = this;
-    setTimeout(function () {
-      set_reload.getDropDownData();
+    setTimeout(() => {
+      this.getDropDownData();
     }, 10);
     
     this._reload = value;
@@ -45,7 +44,7 @@ export class FormFieldDropdownComponent implements OnInit, ControlValueAccessor
   }
 
   _clear?: string;
-  @Input('clear')
+  @Input()
   set clear(value: string)
   {
     this.data = [];
@@ -58,7 +57,7 @@ export class FormFieldDropdownComponent implements OnInit, ControlValueAccessor
     return this._clear || "";
   }
 
-  constructor(private _genericService: GenericService, private _settingsService: SettingsService)
+  constructor(private readonly _genericService: GenericService, private readonly _settingsService: SettingsService)
   {
     this.onTouched = () => { };
     this.onChange = (_: any) => {};
@@ -138,7 +137,7 @@ export class FormFieldDropdownComponent implements OnInit, ControlValueAccessor
       return;
     }
 
-    this._settingsService.getSelector({ entity: Object.assign({typeString: this.modelType}, this.filterValueSourceItem), reloadItemsFlowName: this.dropDownTemplate.reloadItemsFlowName}).subscribe((selectorResponse: ISelectorFlowResponse) => {
+    this._settingsService.getSelector({ entity: { typeString: this.modelType, ...this.filterValueSourceItem }, reloadItemsFlowName: this.dropDownTemplate.reloadItemsFlowName}).subscribe((selectorResponse: ISelectorFlowResponse) => {
       if (selectorResponse.success)
       {
         this.getList(selectorResponse.selector);

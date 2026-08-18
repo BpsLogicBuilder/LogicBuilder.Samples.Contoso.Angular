@@ -14,14 +14,6 @@ export class ListManagerService {
     public updateFormEntityState(entityToSave: EntityType, originalEntity: EntityType, formGroup: UntypedFormGroup, fieldSettings: IFormItemSetting[], isInsert: boolean = false): EntityType {
         if (!formGroup.dirty) {
             entityToSave.entityState = EntityStateType.Unchanged;
-            //The following should not be necessary because this code should not run on insert for nested form groups.
-            // if (isInsert) {
-            //     //Generic Repository will set entityState for all child objects to added
-            //     entityToSave = null;
-            // }
-            // else {
-            //     entityToSave.entityState = EntityStateType.Unchanged;
-            // }
         }
         else if ((!originalEntity) || isInsert) {
             entityToSave.entityState = EntityStateType.Added;
@@ -51,12 +43,12 @@ export class ListManagerService {
                     }
                 }
                 else if (setting.abstractControlType === abstractControlKind.formGroupArray) {
-                    if (!formGroup.controls[setting.field] || !formGroup.controls[setting.field].dirty) {
+                    if (!formGroup.controls[setting.field]?.dirty) {
                         entityToSave[setting.field] = null;
                         continue;
                     }
                     //e.g. entityToSave[setting.field] is instructor.courses,  formGroup.controls[setting.field] is this.instructorForm.value.courses
-                    if (entityToSave[setting.field] && entityToSave[setting.field].length) {
+                    if (entityToSave[setting.field]?.length) {
                         for (let i in entityToSave[setting.field]) {
                             entityToSave[setting.field][i].entityState = EntityStateType.Added;
                             entityToSave[setting.field][i].typeString = (<IFormGroupArraySettings>setting).arrayElementType;
@@ -66,7 +58,7 @@ export class ListManagerService {
                             entityToSave[setting.field][i] = this.updateFormEntityState(//e.g. entityToSave[setting.field] is instructor.courses
                                 entityToSave[setting.field][i], //e.g. entityToSave[setting.field][i] is instructor.courses[i]
                                <EntityType>{},
-                                <UntypedFormGroup>(<UntypedFormArray>formGroup.controls[setting.field]).at(parseInt(i)),
+                                <UntypedFormGroup>(<UntypedFormArray>formGroup.controls[setting.field]).at(Number.parseInt(i)),
                                 (<IFormGroupArraySettings>setting).fieldSettings || []
                             );
                         }
@@ -91,11 +83,10 @@ export class ListManagerService {
                         continue;
                     }
 
-                    entityToSave[setting.field] = Object.assign(
-                        {},
-                        originalEntity[setting.field],
-                        formGroup.controls[setting.field].value
-                    );
+                    entityToSave[setting.field] = {
+                        ...originalEntity[setting.field],
+                        ...formGroup.controls[setting.field].value
+                    };
                     entityToSave[setting.field] = this.updateFormEntityState(
                         entityToSave[setting.field],// instructor.officeAssignment officeAssignment is a child entity
                         originalEntity[setting.field], //original instructor.officeAssignment
@@ -104,29 +95,28 @@ export class ListManagerService {
                         //isInsert is always false at this point
                     );
 
-                    if ((!(originalEntity && originalEntity[setting.field])) && setting.modelType && entityToSave[setting.field]) {
+                    if ((!(originalEntity?.[setting.field])) && setting.modelType && entityToSave[setting.field]) {
                         entityToSave[setting.field].typeString = setting.modelType;
                     }
                 }
                 else if (setting.abstractControlType == abstractControlKind.formGroupArray) {
-                    if (!formGroup.controls[setting.field] || !formGroup.controls[setting.field].dirty) {
+                    if (!formGroup.controls[setting.field]?.dirty) {
                         entityToSave[setting.field] = null;
                         continue;
                     }
                     //e.g. entityToSave[setting.field] is instructor.courses,  formGroup.controls[setting.field] is this.instructorForm.value.courses
-                    if (entityToSave[setting.field] && entityToSave[setting.field].length) {
+                    if (entityToSave[setting.field]?.length) {
                         for (let i in entityToSave[setting.field]) {
-                            if (originalEntity[setting.field]
-                                && originalEntity[setting.field].length
+                            if (originalEntity[setting.field]?.length
                                 && this.itemExists<EntityType>(entityToSave[setting.field][i], originalEntity[setting.field], <string[]>(<IFormGroupArraySettings>setting).keyFields)) {
 
                                 let formArray: UntypedFormArray = <UntypedFormArray>formGroup.controls[setting.field];
                                 //let obj2 = formGroup.controls[setting.field][i];
-                                entityToSave[setting.field][i] = Object.assign({}, originalEntity[setting.field][i], formArray.at(parseInt(i)).value);
+                                entityToSave[setting.field][i] = {...originalEntity[setting.field][i], ...formArray.at(Number.parseInt(i)).value};
                                 entityToSave[setting.field][i] = this.updateFormEntityState(//e.g. entityToSave[setting.field] is instructor.courses
                                     entityToSave[setting.field][i], //e.g. entityToSave[setting.field][i] is instructor.courses[i]
                                     originalEntity[setting.field][i],
-                                    <UntypedFormGroup>formArray.at(parseInt(i)),
+                                    <UntypedFormGroup>formArray.at(Number.parseInt(i)),
                                     (<IFormGroupArraySettings>setting).fieldSettings || []
                                     //isInsert is always false at this point
                                 );
@@ -140,17 +130,16 @@ export class ListManagerService {
                                 entityToSave[setting.field][i] = this.updateFormEntityState(//e.g. entityToSave[setting.field] is instructor.courses
                                     entityToSave[setting.field][i], //e.g. entityToSave[setting.field][i] is instructor.courses[i]
                                     <EntityType>{},
-                                    <UntypedFormGroup>(<UntypedFormArray>formGroup.controls[setting.field]).at(parseInt(i)),
+                                    <UntypedFormGroup>(<UntypedFormArray>formGroup.controls[setting.field]).at(Number.parseInt(i)),
                                     (<IFormGroupArraySettings>setting).fieldSettings || []
                                 );
                             }
                         }
                     }
 
-                    if (originalEntity[setting.field] && originalEntity[setting.field].length) {
+                    if (originalEntity[setting.field]?.length) {
                         for (let i in originalEntity[setting.field]) {
-                            if (entityToSave[setting.field]
-                                && entityToSave[setting.field].length
+                            if (entityToSave[setting.field]?.length
                                 && !this.itemExists<EntityType>(originalEntity[setting.field][i], entityToSave[setting.field] || [], <string[]>(<IFormGroupArraySettings>setting).keyFields)) {
                                 //Add the deleted field
                                 entityToSave[setting.field][i] = originalEntity[setting.field][i];
@@ -169,10 +158,9 @@ export class ListManagerService {
                     //e.g. entityToSave[setting.field] is instructor.courses
                     //entityToSave[setting.field] = this.mergeLists(originalEntity[setting.field] || [], formGroup.controls[setting.field] ? formGroup.controls[setting.field].value : [], (<IMultiSelectFormControlSettings>setting).keyFields);
                     //Why was I merging the lists? Need to merge the lists to get the deleted values
-                    if (entityToSave[setting.field] && entityToSave[setting.field].length) {
+                    if (entityToSave[setting.field]?.length) {
                         for (let i in entityToSave[setting.field]) {
-                            if (originalEntity[setting.field]
-                                && originalEntity[setting.field].length
+                            if (originalEntity[setting.field]?.length
                                 && this.itemExists<EntityType>(entityToSave[setting.field][i], originalEntity[setting.field], (<IMultiSelectFormControlSettings>setting).keyFields)) {
                                 entityToSave[setting.field][i].entityState = EntityStateType.Unchanged;
                             }
@@ -183,7 +171,7 @@ export class ListManagerService {
                         }
                     }
 
-                    if (originalEntity[setting.field] && originalEntity[setting.field].length) {
+                    if (originalEntity[setting.field]?.length) {
                         for (let i in originalEntity[setting.field]) {
                             if (!this.itemExists<EntityType>(originalEntity[setting.field][i], entityToSave[setting.field] || [], (<IMultiSelectFormControlSettings>setting).keyFields)) {
                                 //Add the deleted field
@@ -239,7 +227,7 @@ export class ListManager {
     static mergeStringArray(arr1: string[], arr2: string[]): string[] {
         let arr3: string[] = [];
         for (let i in arr1) {
-            var shared = false;
+            let shared = false;
             for (let j in arr2) {
                 let allKeysMetch: boolean = true;
                 if (arr2[j] != arr1[i]) {

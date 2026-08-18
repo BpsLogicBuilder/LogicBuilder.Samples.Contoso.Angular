@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, EventEmitter, Input, Output } from '@angular/core';
+import { Component, OnInit, EventEmitter, Input, Output } from '@angular/core';
 import { CompositeFilterDescriptor, distinct, filterBy, FilterDescriptor } from '@progress/kendo-data-query';
 import { FilterService } from '@progress/kendo-angular-grid';
 import { GenericService } from '../../http/generic.service';
@@ -9,7 +9,7 @@ import { GenericService } from '../../http/generic.service';
     styleUrls: ['./grid-column-multiselect-filter.component.css'],
     standalone: false
 })
-export class GridColumnMultiselectFilterComponent implements OnInit, AfterViewInit {
+export class GridColumnMultiselectFilterComponent implements OnInit {
   @Input() public isPrimitive!: boolean;
   @Input() public currentFilter!: CompositeFilterDescriptor;
   @Input() public filterMenuTemplate: any;
@@ -19,7 +19,7 @@ export class GridColumnMultiselectFilterComponent implements OnInit, AfterViewIn
   @Input() public field!: string;
   @Output() public valueChange = new EventEmitter<number[]>();
 
-  constructor(private _genericService: GenericService) { }
+  constructor(private readonly _genericService: GenericService) { }
 
   public data: any;
   public currentData: any;
@@ -33,15 +33,12 @@ export class GridColumnMultiselectFilterComponent implements OnInit, AfterViewIn
   protected textAccessor = (dataItem: any) => this.isPrimitive ? dataItem : dataItem[this.textField];
   protected valueAccessor = (dataItem: any) => this.isPrimitive ? dataItem : dataItem[this.valueField];
 
-  public ngAfterViewInit() {
-  }
-
   public isItemSelected(item : any) {
-    return this.value.some(x => x === this.valueAccessor(item));
+    return this.value.includes(this.valueAccessor(item));
   }
 
   public onSelectionChange(item : any) {
-    if (this.value.some(x => x === item)) {
+    if (this.value.includes(item)) {
       this.value = this.value.filter(x => x !== item);
     } else {
       this.value.push(item);
@@ -59,7 +56,7 @@ export class GridColumnMultiselectFilterComponent implements OnInit, AfterViewIn
 
   public onInput(e: any) {
     this.currentData = distinct([
-      ...this.currentData.filter((dataItem : any) => this.value.some(val => val === this.valueAccessor(dataItem))),
+      ...this.currentData.filter((dataItem : any) => this.value.includes(this.valueAccessor(dataItem))),
       ...filterBy(this.data, {
         operator: 'contains',
         field: this.textField,
