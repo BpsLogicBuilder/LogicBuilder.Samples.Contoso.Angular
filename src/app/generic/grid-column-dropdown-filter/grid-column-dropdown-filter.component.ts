@@ -11,7 +11,7 @@ import { CompositeFilterDescriptor } from '@progress/kendo-data-query';
 })
 export class GridColumnDropdownFilterComponent extends BaseFilterCellComponent implements OnInit {
 
-  constructor(filterService: FilterService, private _genericService: GenericService) { 
+  constructor(filterService: FilterService, private readonly _genericService: GenericService) { 
     super(filterService);
   }
 

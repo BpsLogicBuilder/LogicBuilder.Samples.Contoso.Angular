@@ -6,7 +6,7 @@ import { tap } from 'rxjs/operators';
   providedIn: 'root',
 })
 export class EnvironmentConfigService {
-  private http = inject(HttpClient)
+  private readonly http = inject(HttpClient)
   private env : Record<string, string> = {
     API_URL: ''
   };

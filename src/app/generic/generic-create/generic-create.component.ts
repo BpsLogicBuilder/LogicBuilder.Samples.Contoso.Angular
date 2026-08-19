@@ -33,11 +33,11 @@ export class GenericCreateComponent implements OnInit, AfterViewInit {
   @Input() settings!: IEditFormSettings;
   @Input() public commandButtons!: ICommandButton[];
 
-  constructor(private fb: UntypedFormBuilder,
-    private _genericService: GenericService,
-    private _dateService: DateService,
-    private _uiNotificationService: UiNotificationService,
-    private _listManagerService: ListManagerService) { }
+  constructor(private readonly fb: UntypedFormBuilder,
+    private readonly _genericService: GenericService,
+    private readonly _dateService: DateService,
+    private readonly _uiNotificationService: UiNotificationService,
+    private readonly _listManagerService: ListManagerService) { }
 
   public controlType = abstractControlKind;
   public errorMessage?: string;
@@ -169,7 +169,7 @@ export class GenericCreateComponent implements OnInit, AfterViewInit {
     if (!(this.itemForm?.dirty && this.itemForm.valid))
       return;
 
-    let itm: EntityType = Object.assign({}, {}, this.itemForm.value);
+    let itm: EntityType = {...this.itemForm.value};
     itm = this._listManagerService.updateFormEntityState(itm, <EntityType>{}, <UntypedFormGroup>this.itemForm, <IFormItemSetting[]>this.formSettings!.fieldSettings, true);
     itm.typeString = this.formSettings!.modelType;
 

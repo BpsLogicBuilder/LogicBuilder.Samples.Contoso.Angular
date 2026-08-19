@@ -1,6 +1,6 @@
 
 import {throwError as observableThrowError,  Observable } from 'rxjs';
-import { Injectable, Inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError, tap } from 'rxjs/operators';
 import { IFlowSettings } from '../stuctures/i-flow-settings';
@@ -16,11 +16,11 @@ import { UrlsService } from '../http/urls.service'
 })
 export class SettingsService {
 
-  constructor(private _http: HttpClient, _urls: UrlsService) { 
+  constructor(private readonly _http: HttpClient, _urls: UrlsService) { 
     this.baseUrl = _urls.workflowUrl
   }
 
-  private baseUrl: string;
+  private readonly baseUrl: string;
 
   start(): Observable<IFlowSettings> {
     return this._http.post<IFlowSettings>(`${this.baseUrl}/api/flow/Start`, JSON.stringify({}), this.getPostOptions()).pipe

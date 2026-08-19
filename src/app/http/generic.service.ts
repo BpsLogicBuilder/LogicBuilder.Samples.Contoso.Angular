@@ -1,5 +1,5 @@
 import {throwError as observableThrowError,  Observable } from 'rxjs';
-import { Injectable, Inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { IFormRequestDetails, IRequestDetails } from '../stuctures/screens/i-request-details';
 import { tap, map, catchError } from 'rxjs/operators';
@@ -16,11 +16,11 @@ import { UrlsService } from '../http/urls.service'
 })
 export class GenericService {
 
-  constructor(private _http: HttpClient, _urls: UrlsService) { 
+  constructor(private readonly _http: HttpClient, _urls: UrlsService) { 
     this.baseUrl = _urls.crudUrl;
   }
 
-  private baseUrl: string;
+  private readonly baseUrl: string;
 
   getItem(requestDetails: IFormRequestDetails): Observable<any> {
     let request: IGetItemServiceRequest = this.getGetItemRequest(requestDetails);
@@ -111,13 +111,13 @@ export class GenericService {
     };
   }
 
-  private getInsertItemRequest(item: any): IInsertItemServiceRequest {
+  private getInsertItemRequest(item: any): IInsertItemServiceRequest { //NOSONAR - these methods do not have the same purpose
     return {
       entity: item
     };
   }
 
-  private getUpdateItemRequest(item: any): IUpdateItemServiceRequest {
+  private getUpdateItemRequest(item: any): IUpdateItemServiceRequest { //NOSONAR - these methods do not have the same purpose
     return {
       entity: item
     };
