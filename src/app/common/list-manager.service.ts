@@ -18,178 +18,213 @@ export class ListManagerService {
         else if ((!originalEntity) || isInsert) {
             entityToSave.entityState = EntityStateType.Added;
             for (let setting of fieldSettings) {
-                if (setting.abstractControlType === abstractControlKind.groupBox) {
-                    this.updateFormEntityState(
-                        entityToSave,
-                        originalEntity,
-                        formGroup,
-                        (<IGroupBoxSettings>setting).fieldSettings || []
-                    );
-                }
-                else if (setting.abstractControlType === abstractControlKind.formGroup) {
-
-                    if (!formGroup.controls[setting.field]) {
-                        entityToSave[setting.field] = null;
-                        continue;
-                    }
-                    //Generic Repository will set entityState for all child objects to added
-                    //May also need to check for value recursivly in case the original entity is being initialized for insert.
-                    if (!formGroup.controls[setting.field].dirty) {
-                        entityToSave[setting.field] = null;
-                    }
-
-                    if (setting.modelType && entityToSave[setting.field]) {
-                        entityToSave[setting.field].typeString = setting.modelType;
-                    }
-                }
-                else if (setting.abstractControlType === abstractControlKind.formGroupArray) {
-                    if (!formGroup.controls[setting.field]?.dirty) {
-                        entityToSave[setting.field] = null;
-                        continue;
-                    }
-                    //e.g. entityToSave[setting.field] is instructor.courses,  formGroup.controls[setting.field] is this.instructorForm.value.courses
-                    if (entityToSave[setting.field]?.length) {
-                        for (let i in entityToSave[setting.field]) {
-                            entityToSave[setting.field][i].entityState = EntityStateType.Added;
-                            entityToSave[setting.field][i].typeString = (<IFormGroupArraySettings>setting).arrayElementType;
-
-                            //Still check for enity state on child items - if the root entity state === modified then
-                            //the entity state for child items must be defined individually
-                            entityToSave[setting.field][i] = this.updateFormEntityState(//e.g. entityToSave[setting.field] is instructor.courses
-                                entityToSave[setting.field][i], //e.g. entityToSave[setting.field][i] is instructor.courses[i]
-                               <EntityType>{},
-                                <UntypedFormGroup>(<UntypedFormArray>formGroup.controls[setting.field]).at(Number.parseInt(i)),
-                                (<IFormGroupArraySettings>setting).fieldSettings || []
-                            );
-                        }
-                    }
-                }
+                this.setcHILDEntityStateForNewEntity(entityToSave, originalEntity, formGroup, setting);
             }
         }
         else {//entityToSave = instructor
             entityToSave.entityState = EntityStateType.Modified;
             for (let setting of fieldSettings) {
-                if (setting.abstractControlType === abstractControlKind.groupBox) {
-                    this.updateFormEntityState(
-                        entityToSave,
-                        originalEntity,
-                        formGroup,
-                        (<IGroupBoxSettings>setting).fieldSettings || []
-                    );
-                }
-                else if (setting.abstractControlType == abstractControlKind.formGroup) {
-                    if (!formGroup.controls[setting.field]) {
-                        entityToSave[setting.field] = null;
-                        continue;
-                    }
-
-                    entityToSave[setting.field] = {
-                        ...originalEntity[setting.field],
-                        ...formGroup.controls[setting.field].value
-                    };
-                    entityToSave[setting.field] = this.updateFormEntityState(
-                        entityToSave[setting.field],// instructor.officeAssignment officeAssignment is a child entity
-                        originalEntity[setting.field], //original instructor.officeAssignment
-                        <UntypedFormGroup>formGroup.controls[setting.field], //child form group
-                        (<IFormGroupSettings>setting).fieldSettings || [] //child formGroup setting
-                        //isInsert is always false at this point
-                    );
-
-                    if ((!(originalEntity?.[setting.field])) && setting.modelType && entityToSave[setting.field]) {
-                        entityToSave[setting.field].typeString = setting.modelType;
-                    }
-                }
-                else if (setting.abstractControlType == abstractControlKind.formGroupArray) {
-                    if (!formGroup.controls[setting.field]?.dirty) {
-                        entityToSave[setting.field] = null;
-                        continue;
-                    }
-                    //e.g. entityToSave[setting.field] is instructor.courses,  formGroup.controls[setting.field] is this.instructorForm.value.courses
-                    if (entityToSave[setting.field]?.length) {
-                        for (let i in entityToSave[setting.field]) {
-                            if (originalEntity[setting.field]?.length
-                                && this.itemExists<EntityType>(entityToSave[setting.field][i], originalEntity[setting.field], <string[]>(<IFormGroupArraySettings>setting).keyFields)) {
-
-                                let formArray: UntypedFormArray = <UntypedFormArray>formGroup.controls[setting.field];
-                                //let obj2 = formGroup.controls[setting.field][i];
-                                entityToSave[setting.field][i] = {...originalEntity[setting.field][i], ...formArray.at(Number.parseInt(i)).value};
-                                entityToSave[setting.field][i] = this.updateFormEntityState(//e.g. entityToSave[setting.field] is instructor.courses
-                                    entityToSave[setting.field][i], //e.g. entityToSave[setting.field][i] is instructor.courses[i]
-                                    originalEntity[setting.field][i],
-                                    <UntypedFormGroup>formArray.at(Number.parseInt(i)),
-                                    (<IFormGroupArraySettings>setting).fieldSettings || []
-                                    //isInsert is always false at this point
-                                );
-                            }
-                            else {
-                                entityToSave[setting.field][i].entityState = EntityStateType.Added;
-                                entityToSave[setting.field][i].typeString = (<IFormGroupArraySettings>setting).arrayElementType;
-
-                                //Still check for enity state on child items - if the root entity state === modified then
-                                //the entity state for child items must be defined individually
-                                entityToSave[setting.field][i] = this.updateFormEntityState(//e.g. entityToSave[setting.field] is instructor.courses
-                                    entityToSave[setting.field][i], //e.g. entityToSave[setting.field][i] is instructor.courses[i]
-                                    <EntityType>{},
-                                    <UntypedFormGroup>(<UntypedFormArray>formGroup.controls[setting.field]).at(Number.parseInt(i)),
-                                    (<IFormGroupArraySettings>setting).fieldSettings || []
-                                );
-                            }
-                        }
-                    }
-
-                    if (originalEntity[setting.field]?.length) {
-                        for (let i in originalEntity[setting.field]) {
-                            if (entityToSave[setting.field]?.length
-                                && !this.itemExists<EntityType>(originalEntity[setting.field][i], entityToSave[setting.field] || [], <string[]>(<IFormGroupArraySettings>setting).keyFields)) {
-                                //Add the deleted field
-                                entityToSave[setting.field][i] = originalEntity[setting.field][i];
-                                //Set its entity state to deleted.
-                                entityToSave[setting.field][i].entityState = EntityStateType.Deleted;
-                            }
-                        }
-                    }
-                }
-                else if (setting.abstractControlType == abstractControlKind.multiSelectFormControl) {
-                    if (!formGroup.controls[setting.field]) {
-                        entityToSave[setting.field] = null;
-                        continue;
-                    }
-
-                    //e.g. entityToSave[setting.field] is instructor.courses
-                    //entityToSave[setting.field] = this.mergeLists(originalEntity[setting.field] || [], formGroup.controls[setting.field] ? formGroup.controls[setting.field].value : [], (<IMultiSelectFormControlSettings>setting).keyFields);
-                    //Why was I merging the lists? Need to merge the lists to get the deleted values
-                    if (entityToSave[setting.field]?.length) {
-                        for (let i in entityToSave[setting.field]) {
-                            if (originalEntity[setting.field]?.length
-                                && this.itemExists<EntityType>(entityToSave[setting.field][i], originalEntity[setting.field], (<IMultiSelectFormControlSettings>setting).keyFields)) {
-                                entityToSave[setting.field][i].entityState = EntityStateType.Unchanged;
-                            }
-                            else {
-                                entityToSave[setting.field][i].entityState = EntityStateType.Added;
-                                entityToSave[setting.field][i].typeString = setting.multiSelectTemplate.modelType;
-                            }
-                        }
-                    }
-
-                    if (originalEntity[setting.field]?.length) {
-                        for (let i in originalEntity[setting.field]) {
-                            if (!this.itemExists<EntityType>(originalEntity[setting.field][i], entityToSave[setting.field] || [], (<IMultiSelectFormControlSettings>setting).keyFields)) {
-                                //Add the deleted field
-                                let newObject: any = originalEntity[setting.field][i];
-                                newObject.entityState = EntityStateType.Deleted;
-                                //Set its entity state to deleted.
-                                entityToSave[setting.field].push(newObject);
-                            }
-                        }
-                    }
-                }
-                else {
-                    //I don't think we care if setting.abstractControlType = abstractControlKind.multiSelectFormControl or abstractControlKind.inputFieldControl or abstractControlKind.dropdownSelectorControl
-                }
+                this.setChildEntityStateForModifiedEntity(entityToSave, originalEntity, formGroup, setting);
             }
         }
 
         return entityToSave;
+    }
+
+    private setcHILDEntityStateForNewEntity(entityToSave: EntityType, originalEntity: EntityType, formGroup: UntypedFormGroup, setting: IFormItemSetting)
+    {
+        if (setting.abstractControlType === abstractControlKind.groupBox) {
+            this.updateFormEntityState(
+                entityToSave,
+                originalEntity,
+                formGroup,
+                (<IGroupBoxSettings>setting).fieldSettings || []
+            );
+        }
+        else if (setting.abstractControlType === abstractControlKind.formGroup) {
+            this.setFormGroupEntityStateForNewEntity(entityToSave, formGroup, setting);
+        }
+        else if (setting.abstractControlType === abstractControlKind.formGroupArray) {
+            this.setFormGroupArrayEntityStateForNewEntity(entityToSave, formGroup, setting);
+        }
+    }
+
+    private setFormGroupEntityStateForNewEntity(entityToSave: EntityType, formGroup: UntypedFormGroup, setting: IFormItemSetting)
+    {
+        if (!formGroup.controls[setting.field]) {
+            entityToSave[setting.field] = null;
+            return;
+        }
+        //Generic Repository will set entityState for all child objects to added
+        //May also need to check for value recursivly in case the original entity is being initialized for insert.
+        if (!formGroup.controls[setting.field].dirty) {
+            entityToSave[setting.field] = null;
+        }
+
+        if (setting.modelType && entityToSave[setting.field]) {
+            entityToSave[setting.field].typeString = setting.modelType;
+        }
+    }
+
+    private setFormGroupArrayEntityStateForNewEntity(entityToSave: EntityType, formGroup: UntypedFormGroup, setting: IFormItemSetting)
+    {
+        if (!formGroup.controls[setting.field]?.dirty) {
+            entityToSave[setting.field] = null;
+            return;;
+        }
+        //e.g. entityToSave[setting.field] is instructor.courses,  formGroup.controls[setting.field] is this.instructorForm.value.courses
+        if (entityToSave[setting.field]?.length) {
+            for (let i in entityToSave[setting.field]) {
+                entityToSave[setting.field][i].entityState = EntityStateType.Added;
+                entityToSave[setting.field][i].typeString = (<IFormGroupArraySettings>setting).arrayElementType;
+
+                //Still check for enity state on child items - if the root entity state === modified then
+                //the entity state for child items must be defined individually
+                entityToSave[setting.field][i] = this.updateFormEntityState(//e.g. entityToSave[setting.field] is instructor.courses
+                    entityToSave[setting.field][i], //e.g. entityToSave[setting.field][i] is instructor.courses[i]
+                    <EntityType>{},
+                    <UntypedFormGroup>(<UntypedFormArray>formGroup.controls[setting.field]).at(Number.parseInt(i)),
+                    (<IFormGroupArraySettings>setting).fieldSettings || []
+                );
+            }
+        }
+    }
+
+    private setChildEntityStateForModifiedEntity(entityToSave: EntityType, originalEntity: EntityType, formGroup: UntypedFormGroup, setting: IFormItemSetting)
+    {
+        if (setting.abstractControlType === abstractControlKind.groupBox) {
+            this.updateFormEntityState(
+                entityToSave,
+                originalEntity,
+                formGroup,
+                (<IGroupBoxSettings>setting).fieldSettings || []
+            );
+        }
+        else if (setting.abstractControlType == abstractControlKind.formGroup) {
+            this.setFormGroupEntityStateForModifiedEntity(entityToSave, originalEntity, formGroup, setting);
+        }
+        else if (setting.abstractControlType == abstractControlKind.formGroupArray) {
+            this.setFormGroupArrayEntityStateForModifiedEntity(entityToSave, originalEntity, formGroup, setting);
+        }
+        else if (setting.abstractControlType == abstractControlKind.multiSelectFormControl) {
+            this.setMultiSelectEntityStateForModifiedEntity(entityToSave, originalEntity, formGroup, setting);
+        }
+    }
+
+    private setFormGroupEntityStateForModifiedEntity(entityToSave: EntityType, originalEntity: EntityType, formGroup: UntypedFormGroup, setting: IFormItemSetting)
+    {
+        if (!formGroup.controls[setting.field]) {
+            entityToSave[setting.field] = null;
+            return;
+        }
+
+        entityToSave[setting.field] = {
+            ...originalEntity[setting.field],
+            ...formGroup.controls[setting.field].value
+        };
+        entityToSave[setting.field] = this.updateFormEntityState(
+            entityToSave[setting.field],// instructor.officeAssignment officeAssignment is a child entity
+            originalEntity[setting.field], //original instructor.officeAssignment
+            <UntypedFormGroup>formGroup.controls[setting.field], //child form group
+            (<IFormGroupSettings>setting).fieldSettings || [] //child formGroup setting
+            //isInsert is always false at this point
+        );
+
+        if ((!(originalEntity?.[setting.field])) && setting.modelType && entityToSave[setting.field]) {
+            entityToSave[setting.field].typeString = setting.modelType;
+        }
+    }
+
+    private setFormGroupArrayEntityStateForModifiedEntity(entityToSave: EntityType, originalEntity: EntityType, formGroup: UntypedFormGroup, setting: IFormItemSetting)
+    {
+        if (!formGroup.controls[setting.field]?.dirty) {
+            entityToSave[setting.field] = null;
+            return;
+        }
+        //e.g. entityToSave[setting.field] is instructor.courses,  formGroup.controls[setting.field] is this.instructorForm.value.courses
+        if (entityToSave[setting.field]?.length) {
+            for (let i in entityToSave[setting.field]) {
+                if (originalEntity[setting.field]?.length
+                    && this.itemExists<EntityType>(entityToSave[setting.field][i], originalEntity[setting.field], <string[]>(<IFormGroupArraySettings>setting).keyFields)) {
+
+                    let formArray: UntypedFormArray = <UntypedFormArray>formGroup.controls[setting.field];
+                    entityToSave[setting.field][i] = {...originalEntity[setting.field][i], ...formArray.at(Number.parseInt(i)).value};
+                    entityToSave[setting.field][i] = this.updateFormEntityState(//e.g. entityToSave[setting.field] is instructor.courses
+                        entityToSave[setting.field][i], //e.g. entityToSave[setting.field][i] is instructor.courses[i]
+                        originalEntity[setting.field][i],
+                        <UntypedFormGroup>formArray.at(Number.parseInt(i)),
+                        (<IFormGroupArraySettings>setting).fieldSettings || []
+                        //isInsert is always false at this point
+                    );
+                }
+                else {
+                    entityToSave[setting.field][i].entityState = EntityStateType.Added;
+                    entityToSave[setting.field][i].typeString = (<IFormGroupArraySettings>setting).arrayElementType;
+
+                    //Still check for enity state on child items - if the root entity state === modified then
+                    //the entity state for child items must be defined individually
+                    entityToSave[setting.field][i] = this.updateFormEntityState(//e.g. entityToSave[setting.field] is instructor.courses
+                        entityToSave[setting.field][i], //e.g. entityToSave[setting.field][i] is instructor.courses[i]
+                        <EntityType>{},
+                        <UntypedFormGroup>(<UntypedFormArray>formGroup.controls[setting.field]).at(Number.parseInt(i)),
+                        (<IFormGroupArraySettings>setting).fieldSettings || []
+                    );
+                }
+            }
+        }
+
+        this.markDeletedRowsInFormGroupArrayForModifiedEntity(entityToSave, originalEntity, setting);
+    }
+
+    private markDeletedRowsInFormGroupArrayForModifiedEntity(entityToSave: EntityType, originalEntity: EntityType, setting: IFormItemSetting)
+    {
+        if (originalEntity[setting.field]?.length) {
+            for (let i in originalEntity[setting.field]) {
+                if (entityToSave[setting.field]?.length
+                    && !this.itemExists<EntityType>(originalEntity[setting.field][i], entityToSave[setting.field] || [], <string[]>(<IFormGroupArraySettings>setting).keyFields)) {
+                    //Add the deleted field
+                    entityToSave[setting.field][i] = originalEntity[setting.field][i];
+                    //Set its entity state to deleted.
+                    entityToSave[setting.field][i].entityState = EntityStateType.Deleted;
+                }
+            }
+        }
+    }
+
+    private setMultiSelectEntityStateForModifiedEntity(entityToSave: EntityType, originalEntity: EntityType, formGroup: UntypedFormGroup, setting: IFormItemSetting)
+    {
+        if (!formGroup.controls[setting.field]) {
+            entityToSave[setting.field] = null;
+            return;
+        }
+
+        //e.g. entityToSave[setting.field] is instructor.courses
+        //entityToSave[setting.field] = this.mergeLists(originalEntity[setting.field] || [], formGroup.controls[setting.field] ? formGroup.controls[setting.field].value : [], (<IMultiSelectFormControlSettings>setting).keyFields);
+        //Why was I merging the lists? Need to merge the lists to get the deleted values
+        if (entityToSave[setting.field]?.length) {
+            for (let i in entityToSave[setting.field]) {
+                if (originalEntity[setting.field]?.length
+                    && this.itemExists<EntityType>(entityToSave[setting.field][i], originalEntity[setting.field], (<IMultiSelectFormControlSettings>setting).keyFields)) {
+                    entityToSave[setting.field][i].entityState = EntityStateType.Unchanged;
+                }
+                else {
+                    entityToSave[setting.field][i].entityState = EntityStateType.Added;
+                    entityToSave[setting.field][i].typeString = setting.multiSelectTemplate.modelType;
+                }
+            }
+        }
+
+        if (originalEntity[setting.field]?.length) {
+            for (let i in originalEntity[setting.field]) {
+                if (!this.itemExists<EntityType>(originalEntity[setting.field][i], entityToSave[setting.field] || [], (<IMultiSelectFormControlSettings>setting).keyFields)) {
+                    //Add the deleted field
+                    let newObject: any = originalEntity[setting.field][i];
+                    newObject.entityState = EntityStateType.Deleted;
+                    //Set its entity state to deleted.
+                    entityToSave[setting.field].push(newObject);
+                }
+            }
+        }          
     }
 
     public itemExists<T extends Record<string, unknown>>(item: T, arr: T[], matchprops: string[]): boolean {
