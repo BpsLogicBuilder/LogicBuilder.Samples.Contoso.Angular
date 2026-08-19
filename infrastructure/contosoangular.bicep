@@ -40,7 +40,7 @@ param maxReplicas int = 3
 param prefix string = 'contoso'
 
 @description('Specifies the container port.')
-param targetPort int = 80
+param targetPort int = 8080
 
 @description('The naming prefix for all resources.')
 param imageTag string = 'v1.0.0'
