@@ -1,5 +1,5 @@
 import { UntypedFormGroup, UntypedFormBuilder } from "@angular/forms";
-import { IEditFormSettings, IFormItemSetting, IFormGroupData, IFormGroupSettings, IGroupSettings, IDirective } from "./edit/i-edit-form-settings";
+import { IFormItemSetting, IGroupSettings, IDirective } from "./edit/i-edit-form-settings";
 
 export interface IEditDirectiveFunctionArgs {
     directive: IDirective;

@@ -2,7 +2,7 @@ import { GroupDescriptor, CompositeFilterDescriptor, FilterDescriptor, filterBy,
 import { IGroup } from "../stuctures/screens/i-group";
 import { IFilterGroup } from "../stuctures/screens/i-filter-group";
 import { IFilterDefinition } from "../stuctures/screens/i-filter-definition";
-import { IFormItemSetting, abstractControlKind, IFormGroupSettings, IGroupBoxSettings, IValidatorDescription, IFormGroupArraySettings, IFormControlSettings, IFormGroupData, IConditionGroup } from "../stuctures/screens/edit/i-edit-form-settings";
+import { IFormItemSetting, abstractControlKind, IFormGroupSettings, IGroupBoxSettings, IValidatorDescription, IFormGroupArraySettings, IFormControlSettings, IConditionGroup } from "../stuctures/screens/edit/i-edit-form-settings";
 import { EntityType } from "../stuctures/screens/i-base-model";
 import { DateService } from "./date.service";
 import { UntypedFormBuilder, UntypedFormGroup, UntypedFormControl, UntypedFormArray } from "@angular/forms";
