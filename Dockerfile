@@ -1,6 +1,7 @@
 # Build stage
 FROM node:20-alpine AS builder
 WORKDIR /app
+EXPOSE 8080
 
 COPY . .
 
@@ -10,16 +11,12 @@ RUN --mount=type=secret,id=kendo_license,env=TELERIK_LICENSE \
     npm run build
 
 # Production stage
-FROM nginx:alpine
-RUN addgroup -S nonroot \
-    && adduser -S nonroot -G nonroot
+FROM nginxinc/nginx-unprivileged:stable-alpine
 
 COPY --from=builder /app/dist/contoso/browser /usr/share/nginx/html
 COPY env.template.json /usr/share/nginx/html/assets/env.template.json
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
-
-USER nonroot
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]
