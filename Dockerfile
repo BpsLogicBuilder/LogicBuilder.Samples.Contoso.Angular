@@ -14,9 +14,9 @@ FROM nginx:alpine
 RUN addgroup -S nonroot \
     && adduser -S nonroot -G nonroot
 
-COPY --chown=nonroot:nonroot --from=builder /app/dist/contoso/browser /usr/share/nginx/html
-COPY --chown=nonroot:nonroot env.template.json /usr/share/nginx/html/assets/env.template.json
-COPY --chown=nonroot:nonroot entrypoint.sh /entrypoint.sh
+COPY --from=builder /app/dist/contoso/browser /usr/share/nginx/html
+COPY env.template.json /usr/share/nginx/html/assets/env.template.json
+COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 USER nonroot

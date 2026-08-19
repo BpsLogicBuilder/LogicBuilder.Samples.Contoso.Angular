@@ -1,3 +1,4 @@
+* 2026-08-19 - AB#207: Allow root user for copying files.
 * 2026-08-19 - AB#207: Resolving SonarCloud recommendations - part 3.
 * 2026-08-19 - AB#207: Resolving SonarCloud recommendations - part 2.
 * 2026-08-18 - AB#207: Resolving SonarCloud recommendations - part 1.
