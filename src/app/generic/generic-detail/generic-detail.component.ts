@@ -51,7 +51,7 @@ export class GenericDetailComponent implements OnInit {
     }
   }
 
-  public getListContext(entity: EntityType, fieldSetting: IDetailListSetting) {
+  public getListContext(entity: EntityType, fieldSetting: IDetailListSetting) {// NOSONAR - themethods have a different purpose - notice the different parameters
     return {
       $implicit: entity[fieldSetting.field],
       fieldSetting: fieldSetting

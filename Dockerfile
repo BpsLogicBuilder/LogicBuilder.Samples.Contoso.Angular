@@ -11,13 +11,15 @@ RUN --mount=type=secret,id=kendo_license,env=TELERIK_LICENSE \
 
 # Production stage
 FROM nginx:alpine
-# NOSONAR nonroot user fails to execute RUN chmod +x /entrypoint.sh
+RUN addgroup -S nonroot \
+    && adduser -S nonroot -G nonroot
 
 COPY --from=builder /app/dist/contoso/browser /usr/share/nginx/html
-
 COPY env.template.json /usr/share/nginx/html/assets/env.template.json
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
+
+USER nonroot
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]
