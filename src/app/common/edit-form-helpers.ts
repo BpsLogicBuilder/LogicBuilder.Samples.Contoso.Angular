@@ -8,42 +8,54 @@ export class EditFormHelpers
     {
         for (let setting of fieldSettings)
         {
-            if ((setting.abstractControlType === abstractControlKind.inputFieldControl
-                || setting.abstractControlType === abstractControlKind.dropdownSelectorControl
-                || setting.abstractControlType === abstractControlKind.multiSelectFormControl)
-                && formGroup.controls[setting.field] && formGroupData)
-            {
-                if(formControl === formGroup.controls[setting.field])
-                    return formGroupData;
-            }
-            else if (setting.abstractControlType == abstractControlKind.groupBox && formGroupData)
-            {
-                let data = EditFormHelpers.findFormGroupData(formControl, formGroup, <IFormItemSetting[]>(<IGroupBoxSettings>setting).fieldSettings, formGroupData);
-                if (data)
-                    return data;
-            }
-            else if (setting.abstractControlType == abstractControlKind.formGroup && formGroup.controls[setting.field] && formGroupData.formGroupData?.[setting.field])
-            {
-                if(formControl === formGroup.controls[setting.field])
-                    return formGroupData.formGroupData[setting.field];
+            let data = EditFormHelpers.findFormGroupDataInSetting(setting, formControl, formGroup, formGroupData);
+            if (data)
+                return data;
+        }
+        
+        return null;
+    }
 
-                let data =  EditFormHelpers.findFormGroupData(formControl, <UntypedFormGroup>formGroup.controls[setting.field],  <IFormItemSetting[]>(<IFormGroupSettings>setting).fieldSettings, formGroupData.formGroupData[setting.field]);
+    static findFormGroupDataInSetting(setting: IFormItemSetting, formControl: AbstractControl, formGroup: UntypedFormGroup, formGroupData: IFormGroupData): any
+    {
+        if ((setting.abstractControlType === abstractControlKind.inputFieldControl
+            || setting.abstractControlType === abstractControlKind.dropdownSelectorControl
+            || setting.abstractControlType === abstractControlKind.multiSelectFormControl)
+            && formGroup.controls[setting.field] && formGroupData)
+        {
+            if(formControl === formGroup.controls[setting.field])
+                return formGroupData;
+        }
+        else if (setting.abstractControlType == abstractControlKind.groupBox && formGroupData)
+        {
+            return EditFormHelpers.findFormGroupData(formControl, formGroup, <IFormItemSetting[]>(<IGroupBoxSettings>setting).fieldSettings, formGroupData);
+        }
+        else if (setting.abstractControlType == abstractControlKind.formGroup && formGroup.controls[setting.field] && formGroupData.formGroupData?.[setting.field])
+        {
+            if(formControl === formGroup.controls[setting.field])
+                return formGroupData.formGroupData[setting.field];
+
+            return EditFormHelpers.findFormGroupData(formControl, <UntypedFormGroup>formGroup.controls[setting.field],  <IFormItemSetting[]>(<IFormGroupSettings>setting).fieldSettings, formGroupData.formGroupData[setting.field]);
+        }
+        else if (setting.abstractControlType == abstractControlKind.formGroupArray && formGroup.controls[setting.field] && formGroupData.formArrayData?.[setting.field])
+        {
+            return  EditFormHelpers.findFormGroupDataInFromGroupArray(setting, formControl, formGroup, formGroupData);
+        }
+
+        return null;
+    }
+
+    static findFormGroupDataInFromGroupArray(setting: IFormItemSetting, formControl: AbstractControl, formGroup: UntypedFormGroup, formGroupData: IFormGroupData) : any
+    {
+        let formGroupArray: UntypedFormArray = <UntypedFormArray>formGroup.controls[setting.field];
+        if (formGroupArray.controls?.length)
+        {
+            for (let i in formGroupArray.controls)
+            {
+                let fg: UntypedFormGroup = <UntypedFormGroup>formGroupArray.controls[i];
+                let data = EditFormHelpers.findFormGroupData(formControl, fg,  <IFormItemSetting[]>(<IFormGroupArraySettings>setting).fieldSettings, formGroupData.formArrayData?.[setting.field].formGroupDataArray[i] || { displayMessages: {}});
                 if (data)
                     return data;
-            }
-            else if (setting.abstractControlType == abstractControlKind.formGroupArray && formGroup.controls[setting.field] && formGroupData.formArrayData?.[setting.field])
-            {
-                let formGroupArray: UntypedFormArray = <UntypedFormArray>formGroup.controls[setting.field];
-                if (formGroupArray.controls?.length)
-                {
-                    for (let i in formGroupArray.controls)
-                    {
-                        let fg: UntypedFormGroup = <UntypedFormGroup>formGroupArray.controls[i];
-                        let data = EditFormHelpers.findFormGroupData(formControl, fg,  <IFormItemSetting[]>(<IFormGroupArraySettings>setting).fieldSettings, formGroupData.formArrayData[setting.field].formGroupDataArray[i]);
-                        if (data)
-                            return data;
-                    }
-                }
             }
         }
 

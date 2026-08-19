@@ -145,20 +145,7 @@ export class ObjectHelper {
                 || field.abstractControlType === abstractControlKind.multiSelectFormControl) 
                 && formGroup.controls[field.field])
             {
-                if (item)
-                {
-                    patchObject[field.field] = field.type == 'date'
-                        ? dateService.convertToDate(item[field.field])
-                        : item[field.field];
-                }
-                else if ((<IFormControlSettings>field).unchangedValidationSetting)
-                {
-                    patchObject[field.field] = (<IFormControlSettings>field).unchangedValidationSetting!.defaultValue;
-                }
-                else
-                {
-                    patchObject[field.field] = null;
-                }
+                updateFieldValue(field);
             }
             else if (item && field.abstractControlType === abstractControlKind.groupBox)
             {
@@ -192,6 +179,21 @@ export class ObjectHelper {
                 patchObject[field.field] = null;
             }
         });
+
+        function updateFieldValue(field: IFormItemSetting) {
+            if (item) {
+                patchObject[field.field] = field.type == 'date'
+                    ? dateService.convertToDate(item[field.field])
+                    : item[field.field];
+            }
+            else if ((<IFormControlSettings>field).unchangedValidationSetting) {
+                patchObject[field.field] = (<IFormControlSettings>field).unchangedValidationSetting!.defaultValue;
+            }
+
+            else {
+                patchObject[field.field] = null;
+            }
+        }
     }
 
     static getPatchObject(formGroup: UntypedFormGroup, fieldSettings: IFormItemSetting[], item: EntityType, dateService: DateService, fb: UntypedFormBuilder): any
