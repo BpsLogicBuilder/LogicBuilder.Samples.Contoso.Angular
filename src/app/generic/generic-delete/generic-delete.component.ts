@@ -24,8 +24,8 @@ export class GenericDeleteComponent implements OnInit {
   @Input() settings!: IDetailFormSettings;
   @Input() public commandButtons!: ICommandButton[];
 
-  constructor(private _genericService: GenericService,
-    private _uiNotificationService: UiNotificationService) { }
+  constructor(private readonly _genericService: GenericService,
+    private readonly _uiNotificationService: UiNotificationService) { }
 
   public detailType = detailKind;
   public entity?: EntityType;

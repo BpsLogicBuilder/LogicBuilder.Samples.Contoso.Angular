@@ -1,6 +1,6 @@
 
 import {throwError as observableThrowError,  Observable } from 'rxjs';
-import { Injectable, Inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { ProgressService } from '../common/progress.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { DataSourceRequestState, toDataSourceRequest, translateDataSourceResultGroups } from '@progress/kendo-data-query';
@@ -15,14 +15,14 @@ import { UrlsService } from '../http/urls.service'
 })
 export class GridService {
 
-  constructor(private _http: HttpClient, private progressService: ProgressService, _urls: UrlsService) { 
+  constructor(private readonly _http: HttpClient, private readonly progressService: ProgressService, _urls: UrlsService) { 
     this.baseUrl = _urls.gridUrl;
   }
 
-  private baseUrl: string;
+  private readonly baseUrl: string;
 
   public fetch(state: DataSourceRequestState, requestDetails: IGridRequestDetails): Observable<IGridResult> {
-    const hasGroups = state.group && state.group.length;
+    const hasGroups = state.group?.length;
     let request: KendoGridDataRequest = {
       options: toDataSourceRequest(state),
       modelType: requestDetails.modelType!,

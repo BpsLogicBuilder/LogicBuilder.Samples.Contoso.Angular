@@ -23,7 +23,7 @@ export class FormFieldMultiselectComponent implements OnInit, ControlValueAccess
   @Input() public valueField!: string;
   @Input() public filterValueSourceItem?: any;
 
-  constructor(private _genericService: GenericService) {
+  constructor(private readonly _genericService: GenericService) {
     this.onTouched = () => { };
     this.onChange = (_: any) => {};
     this.disabled = false;

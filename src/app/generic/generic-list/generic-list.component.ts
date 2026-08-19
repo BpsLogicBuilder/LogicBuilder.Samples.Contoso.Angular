@@ -19,7 +19,7 @@ export class GenericListComponent implements OnInit {
   @Input() settings!: IListFormSettings;
   @Input() public commandButtons!: ICommandButton[];
 
-  constructor(private _genericService: GenericService, private _uiNotificationService: UiNotificationService) { }
+  constructor(private readonly _genericService: GenericService, private readonly _uiNotificationService: UiNotificationService) { }
 
   public listData?: any[];
 

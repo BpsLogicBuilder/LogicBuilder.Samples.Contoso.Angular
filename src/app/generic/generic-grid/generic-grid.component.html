@@ -74,7 +74,7 @@
               @if (button.gridId === gridSettings.gridId) {
                 @if (idx !== 0) {
                   <span> | </span>
-                  }<a class="text-primary" href="#" onclick="return false;" (click)="gridCommandClick(dataItem, button)">{{button.longString}}</a>
+                  }<a class="text-primary" href="#" (click)="gridCommandClick(dataItem, button)">{{button.longString}}</a>
                 }
               }
             </ng-template>

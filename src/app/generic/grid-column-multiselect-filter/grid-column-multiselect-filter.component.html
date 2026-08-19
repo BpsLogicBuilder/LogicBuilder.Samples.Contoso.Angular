@@ -1,12 +1,14 @@
 <ul>
   @if (showFilter) {
     <li>
-      <input class="k-textbox" (input)="onInput($event)" />
+      <label attr.for="{{field}}">{{field}}</label><input id="{{field}}" class="k-textbox" (input)="onInput($event)" />
     </li>
   }
   @for (item of currentData; track item; let i = $index) {
     <li
       (click)="onSelectionChange(valueAccessor(item))"
+      (keydown.enter)="onSelectionChange(valueAccessor(item))"
+      (keydown.space)="onSelectionChange(valueAccessor(item))"
       [ngClass]="{'k-state-selected': isItemSelected(item)}">
       <input
         type="checkbox"

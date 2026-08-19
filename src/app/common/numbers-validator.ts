@@ -6,7 +6,7 @@ export class NumberValidators
     {
         return (c: AbstractControl): { [key: string]: boolean } | null =>
         {
-            if (c.value && (isNaN(c.value) || c.value < min || c.value > max))
+            if (c.value && (Number.isNaN(c.value) || c.value < min || c.value > max))
             {
                 return { 'range': true };
             }
@@ -16,7 +16,7 @@ export class NumberValidators
 
     static mustBeANumber(c: AbstractControl): { [key: string]: boolean } | null
     {
-        if (c.value && (isNaN(c.value)))
+        if (c.value && (Number.isNaN(c.value)))
         {
             return { 'mustBeANumber': true };
         }

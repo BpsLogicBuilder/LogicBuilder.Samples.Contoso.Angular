@@ -33,7 +33,7 @@ describe('AppComponent', () => {
       expect(h1Element.textContent).toContain('Welcome to Contoso!');
     } else {
       // Skip test if h1 is not rendered (due to child components)
-      expect(true).toBeTruthy();
+      expect(!h1Element).toBeTruthy();
     }
   });
 });

@@ -17,7 +17,7 @@ export class DisplayDropdownValueComponent implements OnInit {
   @Input() public selectedValue: any;
   @Input() public modelType?: any;
 
-  constructor(private _genericService: GenericService, private _settingsService: SettingsService) { }
+  constructor(private readonly _genericService: GenericService, private readonly _settingsService: SettingsService) { }
 
   public selectedText?: string;
   public data: any;
@@ -34,7 +34,7 @@ export class DisplayDropdownValueComponent implements OnInit {
       return;
     }
 
-    this._settingsService.getSelector({ entity: Object.assign({typeString: this.modelType}, this.filterValueSourceItem), reloadItemsFlowName: this.valueTextTemplate.reloadItemsFlowName}).subscribe((selectorResponse: ISelectorFlowResponse) => {
+    this._settingsService.getSelector({ entity: {typeString: this.modelType, ...this.filterValueSourceItem}, reloadItemsFlowName: this.valueTextTemplate.reloadItemsFlowName}).subscribe((selectorResponse: ISelectorFlowResponse) => {
       if (selectorResponse.success)
       {
         this.getList(selectorResponse.selector);
@@ -46,7 +46,7 @@ export class DisplayDropdownValueComponent implements OnInit {
     this._genericService.getList(this.valueTextTemplate?.requestDetails || {}, selector).subscribe(r =>
       {
         this.data = r;
-        if(this.data && this.data.length && this.valueTextTemplate)
+        if(this.data?.length && this.valueTextTemplate)
         {
           const valueTextTemplate = this.valueTextTemplate;
           let selected = this.data.find((i: Record<string, any>) => i[valueTextTemplate.valueField] == this.selectedValue);

@@ -35,11 +35,11 @@ export class GenericEditComponent implements OnInit, AfterViewInit
   @Input() settings!: IEditFormSettings;
   @Input() public commandButtons!: ICommandButton[];
 
-  constructor(private fb: UntypedFormBuilder,
-    private _genericService: GenericService,
-    private _dateService: DateService,
-    private _uiNotificationService: UiNotificationService,
-    private _listManagerService: ListManagerService) { }
+  constructor(private readonly fb: UntypedFormBuilder,
+    private readonly _genericService: GenericService,
+    private readonly _dateService: DateService,
+    private readonly _uiNotificationService: UiNotificationService,
+    private readonly _listManagerService: ListManagerService) { }
 
   public controlType = abstractControlKind;
   public entity?: EntityType;
@@ -200,7 +200,7 @@ export class GenericEditComponent implements OnInit, AfterViewInit
     if (!(this.itemForm?.dirty && this.itemForm.valid))
       return;
 
-    let itm: EntityType = Object.assign({}, this.entity, this.itemForm.value);
+    let itm: EntityType = {...this.entity, ...this.itemForm.value};
     itm = this._listManagerService.updateFormEntityState(itm, <EntityType>this.entity, this.itemForm, <IFormItemSetting[]>this.formSettings!.fieldSettings, this.isInsert);
 
     this._genericService.updateItem(itm, this.formSettings!.requestDetails)

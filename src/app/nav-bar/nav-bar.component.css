@@ -9,7 +9,7 @@
 }
 
 .nav-link-active {
-    background-color: #4189C7 !important;
+    background-color: #2a5a8a !important;
     color: white !important;
     transform: scale(1.02);
 }
@@ -22,7 +22,7 @@ li .glyphicon {
 li.link-active a,
 li.link-active a:hover,
 li.link-active a:focus {
-    background-color: #4189C7;
+    background-color: #2a5a8a !important;
     color: white;
 }
 

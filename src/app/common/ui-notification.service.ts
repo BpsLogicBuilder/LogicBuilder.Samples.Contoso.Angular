@@ -12,7 +12,7 @@ import { INavBarRequest } from '../stuctures/screens/requests/i-nav-bar-request'
 })
 export class UiNotificationService {
 
-  constructor(private _settingsService: SettingsService) { 
+  constructor(private readonly _settingsService: SettingsService) { 
     this.navBar =  new Subject<INavigationBar>();
     this.screenSettings =  new Subject<IScreenSettingsBase>();
   }
@@ -46,7 +46,7 @@ export class UiNotificationService {
     request.flowState = this.flowState;
     this._settingsService.navigateNext(request).subscribe(
       itm => {
-        if (itm.screenSettings.validationResults && itm.screenSettings.validationResults.length)
+        if (itm.screenSettings.validationResults?.length)
         {
           this.screenSettings.next(itm.screenSettings);
         }
