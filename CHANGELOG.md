@@ -1,3 +1,4 @@
+* 2026-08-20 - AB#207: Update ports to support unprivileged image on AKS.
 * 2026-08-19 - AB#207: Fix the target port.
 * 2026-08-19 - AB#207: Use NGINX user for file copying.
 * 2026-08-19 - AB#207: Unprivileged NGINX image for Dockerfile.
