@@ -1,5 +1,5 @@
 # Build stage
-FROM node:20-alpine AS builder
+FROM node:22-alpine AS builder
 WORKDIR /app
 EXPOSE 8080
 
@@ -7,7 +7,7 @@ COPY . .
 
 RUN --mount=type=secret,id=kendo_license,env=TELERIK_LICENSE \
     npm ci --ignore-scripts && \
-    npx --ignore-scripts -p @progress/kendo-licensing@1.11.2 kendo-ui-license activate && \
+    npx --ignore-scripts -p @progress/kendo-licensing@1.11.3 kendo-ui-license activate && \
     npm run build
 
 # Production stage

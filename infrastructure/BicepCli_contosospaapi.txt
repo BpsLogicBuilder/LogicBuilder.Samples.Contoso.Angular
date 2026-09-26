@@ -10,5 +10,8 @@ az acr login -n ${acrName}
 # Build and push the image to ACR
 docker buildx build --secret id=kendo_license,src=$env:APPDATA\Telerik\telerik-license.txt -t "${acrName}.azurecr.io/${imageName}:${imageTag}" -t "${acrName}.azurecr.io/${imageName}:latest" --push .
 
+# Local testing
+# docker build --secret id=kendo_license,src=$env:APPDATA\Telerik\telerik-license.txt -t v1.0.22-alpha.0.23 .
+# docker run -p 8082:8080 -e CRUD_URL="http://localhost:5000" -e GRID_URL="http://localhost:5002" -e WORKFLOW_URL="http://localhost:5004" -e ENVIRONMENT_NAME="DockerLocal" v1.0.22-alpha.0.23
 
 az deployment group create --resource-group $rg --template-file infrastructure/contosoangular.bicep --parameters imageTag="$imageTag"
