@@ -1,3 +1,4 @@
+* 2026-09-26 - AB#236: Rerun analysis.
 * 2026-09-26 - AB#236: Changes to Docker build.
 * 2026-09-26 - AB#236: Adjust env.template and env file pathes for Angular v22.
 * 2026-09-26 - AB#236: Angular v22 source and configuration file changes.
