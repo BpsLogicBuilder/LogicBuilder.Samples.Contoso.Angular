@@ -1,3 +1,7 @@
+* 2026-09-26 - AB#236: Rerun analysis.
+* 2026-09-26 - AB#236: Changes to Docker build.
+* 2026-09-26 - AB#236: Adjust env.template and env file pathes for Angular v22.
+* 2026-09-26 - AB#236: Angular v22 source and configuration file changes.
 * 2026-09-07 - AB#210: prefer persistent keys over implemented members.
 * 2026-08-20 - AB#207: Update ports to support unprivileged image on AKS.
 * 2026-08-19 - AB#207: Fix the target port.
