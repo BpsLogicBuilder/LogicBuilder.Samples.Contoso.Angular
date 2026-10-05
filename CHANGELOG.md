@@ -1,3 +1,4 @@
+* 2026-10-05 - AB#231: Create Agent Chat component
 * 2026-09-26 - AB#236: Rerun analysis.
 * 2026-09-26 - AB#236: Changes to Docker build.
 * 2026-09-26 - AB#236: Adjust env.template and env file pathes for Angular v22.
