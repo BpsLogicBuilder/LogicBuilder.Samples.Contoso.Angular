@@ -19,7 +19,7 @@ COPY --chown=nginx:nginx entrypoint.sh /entrypoint.sh
 
 USER root
 
-COPY --chown=nginx:nginx entrypoint.sh /entrypoint.sh
+COPY entrypoint.sh /entrypoint.sh
 
 RUN sed -i 's/\r$//' /entrypoint.sh && chmod +x /entrypoint.sh
 
