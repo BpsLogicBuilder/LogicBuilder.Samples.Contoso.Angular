@@ -1,3 +1,4 @@
+* 2026-10-14 - AB#233: Include chat hub URL in environment config.
 * 2026-10-05 - AB#231: Create Agent Chat component
 * 2026-09-26 - AB#236: Rerun analysis.
 * 2026-09-26 - AB#236: Changes to Docker build.
