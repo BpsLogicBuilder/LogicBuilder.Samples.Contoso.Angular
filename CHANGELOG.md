@@ -1,4 +1,4 @@
-* 2026-10-14 - AB#233: Include chat hub URL in AKS environment config.
+* 2026-10-14 - AB#234: Include chat hub URL in AKS environment config.
 * 2026-10-14 - AB#233: Include chat hub URL in ACA environment config.
 * 2026-10-05 - AB#231: Create Agent Chat component
 * 2026-09-26 - AB#236: Rerun analysis.
