@@ -26,6 +26,8 @@ spec:
         env:
         - name: APPLICATION_CONFIGURATION_ENDPOINT
           value: "APP_CONFIG_ENDPOINT"
+        - name: CHATHUB_URL
+          value: "http://contoso-chat-hub.LOAD_BALANCER_IP.nip.io" # NOSONAR - DEV Only
         - name: WORKFLOW_URL
           value: "http://contoso-spa-api.LOAD_BALANCER_IP.nip.io" # NOSONAR - DEV Only
         - name: CRUD_URL
