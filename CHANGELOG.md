@@ -1,3 +1,4 @@
+* 2026-10-22 - AB#253: Remove check-for-ab-number workflow.
 * 2026-10-14 - AB#234: Fix SonarCloud issue.
 * 2026-10-14 - AB#234: Include chat hub URL in AKS environment config.
 * 2026-10-14 - AB#233: Include chat hub URL in ACA environment config.
